@@ -9,16 +9,10 @@ const jwtOptions = {
   secretOrKey: process.env.JWT_SECRET
 }
 
-const strategy = new JwtStrategy(jwtOptions, function (jwtPayload) {
-  User.findOne(jwtPayload.id, function(err, user) {
-      if (err) {
-          return done(err, false)
-      }
-      if (user) {
-          return done(null, user)
-      } else {
-          return done(null, false)
-      }
+const strategy = new JwtStrategy(jwtOptions, function (jwtPayload, next) {
+  User.findByPk(jwtPayload.id).then(user => {
+    if (!user) return next(null, false)
+    return next(null, user)
   })
 })
 

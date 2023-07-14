@@ -29,9 +29,6 @@ module.exports = {
       telNumber: {
         type: Sequelize.STRING
       },
-      born: {
-        type: Sequelize.DATE
-      },
       role: {
         type: Sequelize.STRING
       },

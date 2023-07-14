@@ -11,7 +11,6 @@ module.exports = {
             avatar: `https: //loremflickr.com/320/240/people`,
             sex:'male',
             telNumber:'0911111111',
-            born: 2000/11/23,
             role: 'admin',
             createdAt: new Date(),
             updatedAt: new Date()
@@ -23,7 +22,6 @@ module.exports = {
             avatar: `https: //loremflickr.com/320/240/people`,
             sex:'female',
             telNumber:'0922222222',
-            born: 2000/11/22,
             role: 'user',
             createdAt: new Date(),
             updatedAt: new Date()
@@ -35,7 +33,6 @@ module.exports = {
             avatar: `https: //loremflickr.com/320/240/people`,
             sex:'male',
             telNumber:'0933333333',
-            born: 2000/11/11,
             role: 'user',
             createdAt: new Date(),
             updatedAt: new Date()
