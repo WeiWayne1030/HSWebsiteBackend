@@ -1,4 +1,5 @@
 'use strict';
+
 const bcrypt = require('bcrypt-nodejs')
 
 module.exports = {
@@ -11,7 +12,7 @@ module.exports = {
             avatar: `https: //loremflickr.com/320/240/people`,
             sex:'male',
             telNumber:'0911111111',
-            role: 'admin',
+            role: 'seller',
             createdAt: new Date(),
             updatedAt: new Date()
         }, {
@@ -22,7 +23,7 @@ module.exports = {
             avatar: `https: //loremflickr.com/320/240/people`,
             sex:'female',
             telNumber:'0922222222',
-            role: 'user',
+            role: 'buyer',
             createdAt: new Date(),
             updatedAt: new Date()
         }, {
@@ -33,7 +34,7 @@ module.exports = {
             avatar: `https: //loremflickr.com/320/240/people`,
             sex:'male',
             telNumber:'0933333333',
-            role: 'user',
+            role: 'buyer',
             createdAt: new Date(),
             updatedAt: new Date()
         }])

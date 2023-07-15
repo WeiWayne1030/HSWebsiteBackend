@@ -1,6 +1,17 @@
-'use strict';
+'use strict'
+
+const { Model } = require('sequelize')
 module.exports = (sequelize, DataTypes) => {
-  const User = sequelize.define('User', {
+  class User extends Model {
+    static associate(models) {
+      User.belongsToMany(models.Item, {
+        through: models.Order,
+        foreignKey: 'userId',
+        as: 'OrderItems'
+      })
+    }
+  }
+  User.init({
     name: DataTypes.STRING,
     email: DataTypes.STRING,
     account: DataTypes.STRING,
@@ -9,9 +20,10 @@ module.exports = (sequelize, DataTypes) => {
     telNumber: DataTypes.STRING,
     avatar: DataTypes.STRING,
     role:DataTypes.STRING
-  }, {});
-  User.associate = function(models) {
-    // associations can be defined here
-  };
-  return User;
-};
+  }, {
+    sequelize,
+    modelName: 'User',
+    tableName: 'Users'
+  })
+  return User
+}
