@@ -4,7 +4,12 @@ const { Model } = require('sequelize')
 module.exports = (sequelize, DataTypes) => {
   class Color extends Model {
     static associate(models) {
-      Color.hasMany(models.Item, { foreignKey: 'ColorId' 
+      Color.hasMany(models.Stock, { foreignKey: 'ColorId' 
+      })
+      Color.belongsToMany(models.Size, {
+        through: models.Stock, 
+        foreignKey: 'ColorId', 
+        as: 'stockColor'
       })
     }
   }

@@ -2,8 +2,8 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkInsert('Categories',
-      ['Brotop', '上衣', '下身', '洋裝', '套裝 & 連身褲', '外套 & 罩衫', '配件','鞋子']
+    await queryInterface.bulkInsert('Sizes',
+      ['SS', 'S', 'M', 'L', 'XL', 'XXL']
         .map(item => {
           return {
             name: item,
@@ -15,6 +15,6 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkDelete('Categories', {})
+    await queryInterface.bulkDelete('Sizes', {})
   }
 }

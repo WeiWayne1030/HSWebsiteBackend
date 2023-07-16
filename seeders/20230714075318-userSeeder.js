@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 const bcrypt = require('bcrypt-nodejs')
 
@@ -43,4 +43,4 @@ module.exports = {
   down: async(queryInterface, Sequelize) => {
     await queryInterface.bulkDelete('Users', null, {})
   }
-};
+}

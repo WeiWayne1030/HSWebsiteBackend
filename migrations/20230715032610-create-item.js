@@ -8,9 +8,6 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      itemNumberrNumber: {
-        type: Sequelize.STRING
-      },
       name: {
         type: Sequelize.STRING
       },
@@ -23,13 +20,7 @@ module.exports = {
       description: {
         type: Sequelize.TEXT
       },
-      stock: {
-        type: Sequelize.INTEGER
-      },
-      categoryId: {
-        type: Sequelize.INTEGER
-      },
-      colorId: {
+      CategoryId: {
         type: Sequelize.INTEGER
       },
       createdAt: {

@@ -6,22 +6,18 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Item.belongsToMany(models.User, {
         through: models.Order, 
-        foreignKey: 'itemId', 
+        foreignKey: 'ItemId', 
         as: 'usersOrder'
       }),
-      Item.belongsTo(models.Color, { foreignKey: 'ColorId' }),
       Item.belongsTo(models.Category, { foreignKey: 'CategoryId' })
     }
   }
   Item.init({
-    itemNumber: DataTypes.STRING,
     name: DataTypes.STRING,
     amount: DataTypes.NUMBER,
-    stock: DataTypes.NUMBER,
     image: DataTypes.STRING,
     description: DataTypes.STRING,
-    categoryId: DataTypes.NUMBER,
-    colorId: DataTypes.NUMBER
+    CategoryId: DataTypes.NUMBER,
   }, {
     sequelize,
     modelName: 'Item',
