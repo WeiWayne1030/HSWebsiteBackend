@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
         as: 'usersOrder'
       }),
       Item.belongsTo(models.Category, { foreignKey: 'CategoryId' })
+      Item.hasMany(models.Stock),{ foreignKey: 'ItemId' }
     }
   }
   Item.init({

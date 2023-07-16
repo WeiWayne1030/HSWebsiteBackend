@@ -18,6 +18,9 @@ module.exports = {
       ColorId: {
         type: Sequelize.INTEGER
       },
+      ItemId: {
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

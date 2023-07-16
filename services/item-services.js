@@ -1,4 +1,4 @@
-const { Item, Category, Color } = require('../models')
+const { Item, Category, Stock, Color, Size } = require('../models')
 
 const itemServices = {
 getItems: async (req, cb) => {
@@ -24,38 +24,38 @@ getItems: async (req, cb) => {
 },
   getItem: async (req, cb) => {
     try {
-        const { id } = req.params;
-        if (!id) {
-            throw new Error("商品不存在！");
-        }
-        
-        const item = await Item.findByPk(id, {
-            include: [
-                {
-                    model: Category,
-                    attributes: ['name'],
-                }
-            ],
-            order: [['createdAt', 'DESC']],
-        });
-
-        if (!item) {
-            throw new Error("商品不存在！");
-        }
-
-        const simplifiedItem = {
-            id: item.id,
-            name: item.name,
-            image: item.image,
-            description: item.description,
-            category: item.Category.name,
-        };
-
-        return cb(null, simplifiedItem);
+      const { id } = req.params;
+      if (!id) {
+        throw new Error("商品不存在！");
+      }
+      const item = await Item.findAll({
+        id,
+        include: [
+          {
+            model: Category,
+            attributes: ['name'],
+          },
+          {
+            model: Stock,
+            attributes:['quantity'],
+              include:[{
+                model:Color,
+                attributes:['name']
+              },
+              {
+                model:Size,
+                attributes:['name']
+              }
+            ]
+          }
+        ],
+        order: [['createdAt', 'DESC']]
+      })
+      return cb(null, item);
     } catch (err) {
         return cb(err);
     }
-  }
+  },
 }
 
 

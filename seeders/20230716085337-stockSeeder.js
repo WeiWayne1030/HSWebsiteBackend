@@ -1,45 +1,67 @@
-'use strict'
+'use strict';
 
 module.exports = {
-  up: async(queryInterface, Sequelize) => {
+  up: async (queryInterface, Sequelize) => {
     const colors = await queryInterface.sequelize.query(
-      "SELECT id FROM Colors",
+      'SELECT id FROM Colors',
       { type: queryInterface.sequelize.QueryTypes.SELECT }
-    )
+    );
     const sizes = await queryInterface.sequelize.query('SELECT id FROM Sizes;', {
       type: queryInterface.sequelize.QueryTypes.SELECT
-    })
-    
+    });
 
-    const existingPairs = new Set() // 用來儲存已存在的 UserId-ItemId pair
+    const items = await queryInterface.sequelize.query('SELECT id FROM Items;', {
+      type: queryInterface.sequelize.QueryTypes.SELECT
+    });
 
-    const fakeStock = Array.from({ length: 20 }, () => {
-      const quantity = Math.floor(Math.random() * 10) + 1
-      const colorId = colors[Math.floor(Math.random() * colors.length)].id
-      const sizeId = sizes[Math.floor(Math.random() * sizes.length)].id
+    const existingPairs = new Set(); // 用來儲存已存在的 UserId-ItemId pair
 
-      const pair = `${colorId}-${sizeId}` // 建立 UserId-ItemId pair
+    const fakeStock = [];
 
-      // 檢查是否已存在相同的 UserId-ItemId pair，若存在則重新選取
-      if (existingPairs.has(pair)) {
-        return null
+    for (let i = 0; i < items.length; i++) {
+      const itemId = items[i].id;
+
+      const sizeIds = new Set();
+      const colorIds = new Set();
+
+      while (sizeIds.size < 6) {
+        const sizeId = sizes[Math.floor(Math.random() * sizes.length)].id;
+        sizeIds.add(sizeId);
       }
 
-      existingPairs.add(pair) // 將新的 UserId-ItemId pair加入已存在的集合
-
-      return {
-        quantity,
-        ColorId: colorId,
-        SizeId: sizeId,
-        createdAt: new Date(),
-        updatedAt: new Date()
+      while (colorIds.size < 11) {
+        const colorId = colors[Math.floor(Math.random() * colors.length)].id;
+        colorIds.add(colorId);
       }
-    }).filter(order => order !== null) 
 
-    await queryInterface.bulkInsert('Stock', fakeStock)
+      for (const sizeId of sizeIds) {
+        for (const colorId of colorIds) {
+          const pair = `${itemId}-${sizeId}-${colorId}`; // 建立 ItemId-SizeId-ColorId pair
+
+          // 檢查是否已存在相同的 ItemId-SizeId-ColorId pair，若存在則重新選取
+          if (existingPairs.has(pair)) {
+            continue;
+          }
+
+          existingPairs.add(pair); // 將新的 ItemId-SizeId-ColorId pair 加入已存在的集合
+
+          const quantity = Math.floor(Math.random() * 10) + 1;
+          fakeStock.push({
+            quantity,
+            ColorId: colorId,
+            SizeId: sizeId,
+            ItemId: itemId,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          });
+        }
+      }
+    }
+
+    await queryInterface.bulkInsert('Stock', fakeStock, {});
   },
 
-  down: async(queryInterface, Sequelize) => {
-    await queryInterface.bulkDelete('Stock', {})
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.bulkDelete('Stock', null, {});
   }
-}
+};
