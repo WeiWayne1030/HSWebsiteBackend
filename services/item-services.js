@@ -37,7 +37,7 @@ getItems: async (req, cb) => {
           },
           {
             model: Stock,
-            attributes:['quantity'],
+            attributes:['itemStock'],
               include:[{
                 model:Color,
                 attributes:['name']

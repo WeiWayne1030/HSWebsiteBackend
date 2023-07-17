@@ -58,10 +58,10 @@ module.exports = {
       }
     }
 
-    await queryInterface.bulkInsert('Stock', fakeStock, {})
+    await queryInterface.bulkInsert('Stocks', fakeStock, {})
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkDelete('Stock', null, {})
+    await queryInterface.bulkDelete('Stocks', null, {})
   }
 }

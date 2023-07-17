@@ -6,7 +6,7 @@ module.exports = {
       "SELECT id FROM Users WHERE role <> 'seller'",
       { type: queryInterface.sequelize.QueryTypes.SELECT }
     );
-    const stock = await queryInterface.sequelize.query('SELECT id, ItemId FROM Stock;', {
+    const stocks = await queryInterface.sequelize.query('SELECT id, ItemId FROM Stocks;', {
       type: queryInterface.sequelize.QueryTypes.SELECT
     });
 
@@ -19,11 +19,11 @@ module.exports = {
 
     const fakeOrders = Array.from({ length: 30 }, () => {
       const user = users[Math.floor(Math.random() * users.length)];
-      const stockItem = stock[Math.floor(Math.random() * stock.length)];
-      const item = items.find((item) => item.id === stockItem.ItemId);
+      const stock = stocks[Math.floor(Math.random() * stocks.length)];
+      const item = items.find((item) => item.id === stock.ItemId);
       const itemQuantity = Math.floor(Math.random() * 10);
       const total = item ? item.amount * itemQuantity : 0;
-      const pair = `${user.id}-${stockItem.id}`; // 建立 UserId-ItemId 对
+      const pair = `${user.id}-${stock.id}`; // 建立 UserId-ItemId 对
       const state = Math.random() >= 0.5;
       const paddedCounter = counter.toString().padStart(2, '0');
 
@@ -38,8 +38,8 @@ module.exports = {
         orderNumber: `OR1000${paddedCounter}`,
         state,
         UserId: user.id,
-        StockId: stockItem.id,
-        productQuantity: itemQuantity,
+        StockId: stock.id,
+        itemQuantity,
         total,
         createdAt: new Date(),
         updatedAt: new Date()

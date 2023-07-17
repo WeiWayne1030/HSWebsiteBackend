@@ -2,24 +2,29 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Cart', {
+    return queryInterface.createTable('Orders', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      orderQuantity: {
-        allowNull: false,
+      orderNumber: {
+        type: Sequelize.STRING
+      },
+      itemQuantity:{
         type: Sequelize.INTEGER
       },
-      finalTotal: {
-        type: Sequelize.INTEGER
+      state:{
+        type: Sequelize.BOOLEAN
       },
-      OrderId: {
+      StockId: {
         type: Sequelize.INTEGER
       },
       UserId: {
+        type: Sequelize.INTEGER
+      },
+      total: {
         type: Sequelize.INTEGER
       },
       createdAt: {
@@ -34,6 +39,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-   return queryInterface.dropTable('Cart')
+   return queryInterface.dropTable('Orders')
   }
 }
