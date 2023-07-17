@@ -6,6 +6,7 @@ const itemController = {
   },
   getItem: (req, res, next) => {
       itemServices.getItem(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  
   }
-}
 module.exports = itemController

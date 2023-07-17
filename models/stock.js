@@ -6,14 +6,16 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Stock.belongsTo(models.Size, { foreignKey: 'SizeId' }),
       Stock.belongsTo(models.Color, { foreignKey: 'ColorId' })
-      Stock.belongsTo(models.Item, { foreignKey: 'ItemId' })  
+      Stock.belongsTo(models.Item, { foreignKey: 'ItemId' })
+      Stock.belongsTo(models.Cart, { foreignKey: 'StockId' })  
     }
   }
   Stock.init({
-    quantity: DataTypes.NUMBER,
-    ColorId: DataTypes.NUMBER,
-    SizeId: DataTypes.NUMBER,
-    ItemId:DataTypes.NUMBER
+    productNumber:DataTypes.STRING,
+    quantity: DataTypes.INTEGER,
+    ColorId: DataTypes.INTEGER,
+    SizeId: DataTypes.INTEGER,
+    ItemId:DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Stock',

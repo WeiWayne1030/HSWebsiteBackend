@@ -17,5 +17,12 @@ router.post('/api/users', userController.signUp)
 //item
 router.get('/api/items',authenticated, authenticatedUser, itemController.getItems)
 router.get('/api/items/:id',authenticated, authenticatedUser, itemController.getItem)
+//router.post('/api/items/:id/cart', authenticated, authenticatedUser, userController.addToCart)
+//cart
+
+//router.put('/api/cart/:id', authenticated, authenticatedUser, userController.putCart)
+//router.delete('/api/cart/:id', authenticated, authenticatedUser, userController.delCart)
+//router.delete('/api/carts', authenticated, authenticatedUser, userController.delCarts)
+
 
 module.exports = router

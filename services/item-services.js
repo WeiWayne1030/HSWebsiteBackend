@@ -28,8 +28,8 @@ getItems: async (req, cb) => {
       if (!id) {
         throw new Error("商品不存在！");
       }
-      const item = await Item.findAll({
-        id,
+      const items = await Item.findAll({
+        where: { id },
         include: [
           {
             model: Category,
@@ -51,6 +51,10 @@ getItems: async (req, cb) => {
         ],
         order: [['createdAt', 'DESC']]
       })
+      if (items.length === 0) {
+      return cb(null, {});
+    }
+      const item = items[0]
       return cb(null, item);
     } catch (err) {
         return cb(err);
