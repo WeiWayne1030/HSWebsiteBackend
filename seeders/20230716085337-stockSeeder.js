@@ -35,7 +35,6 @@ module.exports = {
       for (const sizeId of sizeIds) {
         for (const colorId of colorIds) {
           const pair = `${itemId}-${sizeId}-${colorId}` // 建立 ItemId-SizeId-ColorId pair
-
           // 檢查是否已存在相同的 ItemId-SizeId-ColorId pair，若存在則重新選取
           if (existingPairs.has(pair)) {
             continue
@@ -43,11 +42,11 @@ module.exports = {
 
           existingPairs.add(pair) // 將新的 ItemId-SizeId-ColorId pair 加入已存在的集合
 
-          const quantity = Math.floor(Math.random() * 10) + 1
+          const itemstock = Math.floor(Math.random() * 10) + 1
           const paddedCounter = counter.toString().padStart(2, '0')
           fakeStock.push({
-            productNumber: `CE1000${paddedCounter}`,
-            quantity,
+            productNumber: `ST1000${paddedCounter}`,
+            itemstock,
             ColorId: colorId,
             SizeId: sizeId,
             ItemId: itemId,

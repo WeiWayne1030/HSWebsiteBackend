@@ -13,7 +13,7 @@ const cartController = {
   //               },
   //         include: [{
   //           model:Item,
-  //           attribute:[name, amount, image],
+  //           attributes:[name, amount, image],
   //             include: [{
   //               model:Category,
   //               attribute:[name]
@@ -21,27 +21,39 @@ const cartController = {
   //         },
   //         {
   //           model:Color,
-  //           attribute:[name]
+  //           attributes:[name]
   //         },
   //         {
   //           model:Size,
-  //           attribute:[name]
+  //           attributes:[name]
   //         }],
-  //         attribute: [{}]
+  //         attributes: [{}]
   //       })
+
+  //       const amount = await Cart.findOne({
+  //         where: {
+  //                   StockId: id
+  //               },
+  //         include: [{
+  //           model:Item,
+  //           attributes:[amount]
+  //         }]
+  //       })
+
+  //       const total = await quantity * amount
         
   //       const newCart = await cart.create({
   //           quantity,
-            
+  //           StockId:id,
+  //           total
   //       })
-  //       return cb(null, {
+  //       return res({
   //           status: 'success',
-  //           message: '推文成功！',
-  //           ...tweet.dataValues,
-  //           createdAt: relativeTimeFromNow(tweet.dataValues.createdAt)
+  //           message: '成功放入購物車！',
+  //           newCart
   //       })
   //     } catch (err) {
-  //         cb(err)
+  //         res(err)
   //     }
   //   },
 }

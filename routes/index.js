@@ -3,6 +3,7 @@ const router = express.Router()
 
 const userController = require('../controllers/user-controller')
 const itemController = require('../controllers/item-controller')
+const cartController = require('../controllers/cart-controller')
 
 const { authenticatedUser, authenticated } = require('../middleware/auth')
 //const adminController = require('../controllers/admin-controller')
@@ -17,9 +18,12 @@ router.post('/api/users', userController.signUp)
 //item
 router.get('/api/items',authenticated, authenticatedUser, itemController.getItems)
 router.get('/api/items/:id',authenticated, authenticatedUser, itemController.getItem)
-//router.post('/api/items/:id/cart', authenticated, authenticatedUser, userController.addToCart)
-//cart
+router.post('/api/cart/:id', authenticated, authenticatedUser, cartController.addToCart)
 
+//order
+// router.post('/api/order', authenticated, authenticatedUser, userController.postOder)
+
+//cart
 //router.put('/api/cart/:id', authenticated, authenticatedUser, userController.putCart)
 //router.delete('/api/cart/:id', authenticated, authenticatedUser, userController.delCart)
 //router.delete('/api/carts', authenticated, authenticatedUser, userController.delCarts)

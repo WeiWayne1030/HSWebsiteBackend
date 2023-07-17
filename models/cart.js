@@ -4,14 +4,15 @@ const { Model } = require('sequelize')
 module.exports = (sequelize, DataTypes) => {
   class Cart extends Model {
     static associate(models) {
-      Cart.belongsTo(models.Stock, { foreignKey: 'StockId' })
+      Cart.belongsTo(models.Order, { foreignKey: 'OrderId' })
+      Cart.belongsTo(models.User, { foreignKey: 'UserId' })
     }
   }
   Cart.init({
-    quantity: DataTypes.NUMBER,
-    total: DataTypes.NUMBER,
+    orderQuantity: DataTypes.NUMBER,
     finalTotal: DataTypes.NUMBER,
-    StockId: DataTypes.NUMBER,
+    OrderId: DataTypes.NUMBER,
+    UserId: DataTypes.NUMBER
   }, {
     sequelize,
     modelName: 'Cart',

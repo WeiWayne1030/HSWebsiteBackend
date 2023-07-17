@@ -1,16 +1,19 @@
 'use strict'
-const { Model } = require('sequelize')
 
+const { Model } = require('sequelize')
 module.exports = (sequelize, DataTypes) => {
   class Order extends Model {
     static associate(models) {
-      Order.belongsTo(models.Item, { foreignKey: 'ItemId' }),
+      Order.belongsTo(models.Stock, { foreignKey: 'StockId' }),
       Order.belongsTo(models.User, { foreignKey: 'UserId' })
     }
   }
   Order.init({
-    ItemId: DataTypes.INTEGER,
-    UserId: DataTypes.INTEGER
+    orderNumber: DataTypes.STRING,
+    state: DataTypes.BOOLEAN,
+    itemQuantity: DataTypes.NUMBER,
+    StockId: DataTypes.NUMBER,
+    UserId: DataTypes.NUMBER
   }, {
     sequelize,
     modelName: 'Order',

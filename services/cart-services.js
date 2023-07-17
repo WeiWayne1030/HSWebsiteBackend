@@ -1,8 +1,8 @@
 const { Item, Category, Stock, Color, Size } = require('../models')
 
-const itemServices = {
+const cartServices = {
   
 }
 
 
-module.exports = itemServices
+module.exports = cartServices
