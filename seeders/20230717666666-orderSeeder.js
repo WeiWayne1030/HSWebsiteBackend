@@ -1,55 +1,48 @@
-'use strict';
+const faker = require('faker');
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    const users = await queryInterface.sequelize.query(
-      "SELECT id FROM Users WHERE role <> 'seller'",
-      { type: queryInterface.sequelize.QueryTypes.SELECT }
-    );
-    const stocks = await queryInterface.sequelize.query('SELECT id, ItemId FROM Stocks;', {
-      type: queryInterface.sequelize.QueryTypes.SELECT
-    });
+    try {
+      // Fetch the data from the Carts table
+      const carts = await queryInterface.sequelize.query('SELECT id, UserId, amount FROM Carts', {
+        type: queryInterface.sequelize.QueryTypes.SELECT,
+      });
 
-    const items = await queryInterface.sequelize.query('SELECT id, amount FROM Items;', {
-      type: queryInterface.sequelize.QueryTypes.SELECT
-    });
+      // Group the data by UserId in Carts
+      const cartsByUserId = carts.reduce((acc, cart) => {
+        acc[cart.UserId] = acc[cart.UserId] || [];
+        acc[cart.UserId].push(cart);
+        return acc;
+      }, {});
 
-    const existingPairs = new Set(); // 用来储存已存在的 UserId-ItemId 对
-    let counter = 1;
+      const ordersData = [];
 
-    const fakeOrders = Array.from({ length: 30 }, () => {
-      const user = users[Math.floor(Math.random() * users.length)];
-      const stock = stocks[Math.floor(Math.random() * stocks.length)];
-      const item = items.find((item) => item.id === stock.ItemId);
-      const itemQuantity = Math.floor(Math.random() * 10);
-      const total = item ? item.amount * itemQuantity : 0;
-      const pair = `${user.id}-${stock.id}`; // 建立 UserId-ItemId 对
-      const state = Math.random() >= 0.5;
-      const paddedCounter = counter.toString().padStart(2, '0');
+      // Generate random CartId and calculate total for each UserId
+      Object.keys(cartsByUserId).forEach((userId) => {
+        const randomCartIndex = Math.floor(Math.random() * cartsByUserId[userId].length);
+        const randomCart = cartsByUserId[userId][randomCartIndex];
+        const randomCartId = randomCart.id;
+        const total = cartsByUserId[userId].reduce((sum, cart) => sum + cart.amount, 0);
 
-      // 检查是否已存在相同的 UserId-ItemId 对，若存在则重新选择
-      if (existingPairs.has(pair)) {
-        return null;
-      }
+        ordersData.push({
+          total: total,
+          state: faker.random.boolean(),
+          CartId: randomCartId,
+          UserId: userId,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+      });
 
-      existingPairs.add(pair); // 将新的 UserId-ItemId 对加入已存在的集合
-
-      return {
-        orderNumber: `OR1000${paddedCounter}`,
-        state,
-        UserId: user.id,
-        StockId: stock.id,
-        itemQuantity,
-        total,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-    }).filter((order) => order !== null);
-
-    await queryInterface.bulkInsert('Orders', fakeOrders);
+      // Insert the data into the Orders table
+      await queryInterface.bulkInsert('Orders', ordersData, {});
+    } catch (error) {
+      console.error('Error seeding data:', error);
+    }
   },
 
-  down: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkDelete('Orders', {});
-  }
+  down: async (queryInterface) => {
+    // Truncate (delete all) records from the Orders table
+    await queryInterface.bulkDelete('Orders', null, {});
+  },
 };

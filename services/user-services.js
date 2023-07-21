@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 const sequelize = require('sequelize')
 const helpers = require('../_helpers')
 const { Op } = require('sequelize')
-const { User, Order, Method,Cart } = require('../models')
+const { User, Order, Method,Cart, OrderInfo,Stock, Item } = require('../models')
 const { localFileHandler } = require('../helpers/imgurFileHandler')
 
 const userServices = {
@@ -147,62 +147,200 @@ const userServices = {
                 cb(err)
             })
     },
-    pay: async (req, cb) => {
+    ordeInfo: async (req, cb) => {
         try {
-            const userId = helpers.getUser(req).id
+            const { orderId } = req.params;
+            console.log(orderId);
+            const userId = helpers.getUser(req).id;
             const { shipName, address, shipTel, MethodId } = req.body;
-            
-            const carts = await Cart.findAll({
-                where: { UserId: userId },
-                atrributes: ['amount'],
+            const lastOrder = await OrderInfo.findOne({
+                order: [['orderNumber', 'DESC']],
             });
-        
-            const orderNumber = `OR${Date.now().toString().padStart(10, '0')}`;
-            const totalAmount = carts.reduce((a, b) => a + b.amount, 0);
-            const order = await Order.create({
+
+            let orderNumber;
+            if (lastOrder) {
+                const lastOrderNumber = lastOrder.orderNumber;
+                const lastOrderNumberInt = parseInt(lastOrderNumber.substring(2));
+                orderNumber = `OR${(lastOrderNumberInt + 1).toString().padStart(6, '0')}`;
+            } else {
+                orderNumber = 'OR100001';
+            }
+
+            const order = await Order.findOne({
+                where: { UserId: userId },
+            });
+
+            const method = await Method.findByPk(MethodId);
+
+            const totalAmount = order.total;
+            const orderInfo = await OrderInfo.create({
                 orderNumber: orderNumber,
                 UserId: userId,
+                OrderId: orderId,
                 shipName,
                 address,
                 shipTel,
                 MethodId,
                 total: totalAmount,
             });
-            
+            cb(null, orderInfo);
+        } catch (err) {
+            cb(err);
+        }
+    },
+    buildOrder: async (req, cb) => {
+        try {
+            const { id } = req.params;
+            const userId = helpers.getUser(req).id;
+            const carts = await Cart.findAll({
+            where: {
+                id,
+                UserId: userId,
+            },
+            include: [
+                {
+                model: Stock,
+                include: [
+                    {
+                    model: Item,
+                    },
+                ],
+                },
+            ],
+            });
+            if (carts.length === 0) {
+            return cb(new Error("購物車不存在."));
+            }
+
+            // 建立訂單
+            const order = await Order.create({
+                UserId: userId,
+                total: carts.reduce((a, b) => a + b.Stock.Item.price * b.itemQuantity, 0),
+                state: false,
+                itemQuantity: carts.reduce((a, b) => a + b.dataValues.amount, 0),
+                CartId: id,
+            });
             cb(null, order);
         } catch (err) {
             cb(err);
         }
     },
-    editOrder: async (req, cb) => {
-    try {
-        const { orderId } = req.params;
-        const { shipName, address, shipTel, MethodId } = req.body;
-        const order = await Order.findByPk(orderId)
-
-        if (!order) {
-            return cb(new Error("訂單不存在."));
-        }
-
-        if (order.dataValues.UserId != helpers.getUser(req).id) {
-            return cb(new Error("只能編輯自己的訂單."));
-        }
-
-        await order.update(
-            {
-                shipName,
-                address,
-                shipTel,
-                MethodId,
+    putOrderInfo: async (req, cb) => {
+        const { id } = req.params
+        const { shipName, address, shipTel, MethodId } = req.body
+        const { file } = req
+        if (!shipName || !address || !shipTel || !MethodId) throw new Error('所有欄位皆為必填！')
+        if (shipName.length >= 50) throw new Error('收件人姓名不可超過50字！')
+        if (address.length >= 160) throw new Error('收件地址不可超過160字！')
+        if (shipTel.length >= 20) throw new Error('收件人電話不可超過20字！')
+        return Promise.all([
+            OrderInfo.findAll({
+                raw: true,
+                where: { id: { [Op.ne]: id } } // 找出除了使用者本人以外的所有使用者
+            }),
+            OrderInfo.findByPk(id),
+            localFileHandler(file)
+        ])
+            .then(([allOrderInfos, orderInfo, filePath]) => {
+                if (allOrderInfos.length > 0) {
+                    const existingShipName = allOrderInfos.find(orderInfo => orderInfo.shipName === shipName)
+                    const existingAddress = allOrderInfos.find(orderInfo => orderInfo.address === address)
+                    const existingShipTel = allOrderInfos.find(orderInfo => orderInfo.shipTel === shipTel)
+                    if (existingShipName) {
+                        throw new Error('收件人姓名已存在！')
+                    } else if (existingAddress) {
+                        throw new Error('收件地址已存在！')
+                    } else if (existingShipTel) {
+                        throw new Error('收件人電話已存在！')
+                    }
+                }
+                if (!orderInfo) throw new Error("訂單不存在！")
+                if (orderInfo.id !== Number(id)) throw new Error('只能編輯自己的訂單！')
+                orderInfo.update({
+                    shipName,
+                    address,
+                    shipTel,
+                    MethodId,
+                    avatar: filePath || orderInfo.avatar,
+                })
+                    .then(updateOrderInfo => {
+                        const orderInfoData = updateOrderInfo.toJSON()
+                        cb(null, orderInfoData)
+                    })
+                    .catch(err => {
+                        cb(err)
+                    })
             }
-        );
-
-        cb(null, order);
-    } catch (err) {
-        cb(err);
+        )
+    },
+    getOrders: async (req, cb) => {
+        try {
+            const userId = helpers.getUser(req).id;
+            const orders = await Order.findAll({
+                where: { UserId: userId },
+                include: [
+                    {
+                        model: Cart,
+                        include: [
+                            {
+                                model: Stock,
+                                include: [
+                                    {
+                                        model: Item,
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        model: OrderInfo,
+                        include: [
+                            {
+                                model: Method,
+                            },
+                        ],
+                    },
+                ],
+            });
+            cb(null, orders);
+        } catch (err) {
+            cb(err);
+        }
+    },
+    getOrder: async (req, cb) => {
+        try {
+            const { orderId } = req.params;
+            const userId = helpers.getUser(req).id;
+            const order = await Order.findOne({
+                where: { id: orderId, UserId: userId },
+                include: [
+                    {
+                        model: Cart,
+                        include: [
+                            {
+                                model: Stock,
+                                include: [
+                                    {
+                                        model: Item,
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        model: OrderInfo,
+                        include: [
+                            {
+                                model: Method,
+                            },
+                        ],
+                    },
+                ],
+            });
+            cb(null, order);
+        } catch (err) {
+            cb(err);
+        }
     }
-    }
-
 }
-
 module.exports = userServices

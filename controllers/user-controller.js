@@ -14,11 +14,23 @@ const userController = {
   putUser: (req, res, next) => {
       userServices.putUser(req, (err, data) => err ? next(err) : res.status(200).json(data))
   },
-  pay: (req, res, next) => {
-      userServices.pay(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  ordeInfo: (req, res, next) => {
+      userServices.ordeInfo(req, (err, data) => err ? next(err) : res.status(200).json(data))
   },
   editOrder: (req, res, next) => {
       userServices.editOrder(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  buildOrder: (req, res, next) => {
+      userServices.buildOrder(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+    putOrderInfo: (req, res, next) => {
+        userServices.putOrderInfo(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  getOrders: (req, res, next) => {
+        userServices.getOrders(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  getOrder: (req, res, next) => {
+        userServices.getOrder(req, (err, data) => err ? next(err) : res.status(200).json(data))
   }
 }
 module.exports = userController

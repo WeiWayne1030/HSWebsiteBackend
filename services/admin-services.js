@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt-nodejs')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 
-const { Item, Stock, Color, Size, Cart, User, Order, Method, Category } = require('../models');
+const { Item, Stock, Color, Size, Cart, User, Order, Method, Category,OrderInfo } = require('../models');
 
 const adminServices = {
     signIn: async(req, cb) => {
@@ -202,46 +202,59 @@ const adminServices = {
             cb(err)
         }
     },
-    getOrders: async (req, cb) =>{
+    getOrderInfos: async (req, cb) =>{
         try {
             const DEFAULT_LIMIT = 9
             const MethodId = Number(req.query.MethodId) || ''
             const page = Number(req.query.page) || 1
             const limit = Number(req.query.limit) || DEFAULT_LIMIT
             const offset = getOffset(limit, page)
-            const orders = await Order.findAndCountAll({
+            const orderInfos = await OrderInfo.findAndCountAll({
                 include: [
                     {
                     model: Method,
-                    where:  {  ...MethodId ? { MethodId } : {} },
+                    where:  {  ...MethodId ? { MethodId } : {} },   
+                },
+                {
+                    model: Order,
+                    include: [
+                        { model: User }
+                    ],
+                    attributes: ['state', 'total', 'createdAt', 'updatedAt']
                 }],
                 limit,
                 offset
             })
             const methods = Method.findAll({ raw: true })
             const pagination = getPagination(limit, page, orders.count)
-            cb(null, { orders, methods,MethodId, pagination })
+            cb(null, { orderInfos, methods,MethodId, pagination })
         } catch (err) {
             cb(err)
         }
     },
-    getOrder: async (req, cb) => {
+    getOrderInfo: async (req, cb) => {
         try {
-            const id = req.params.orderId;
+            const id = req.params.InfoId;
             if (!id) {
                 throw new Error('此訂單不存在！');
             }
-            const order = await Order.findOne({
+            const info = await OrderInfo.findOne({
                 id,
                 include: [{
                         model: Method
+                    },{
+                        model: Order,
+                        include: [
+                            { model: User }
+                        ]
                     }],
-                    order: [['createdAt', 'DESC']] 
+
+                order: [['createdAt', 'DESC']] 
             });
-            if (!order) {
+            if (!info) {
                 throw new Error('找不到對應的訂單！');
             }
-            cb(null, { order });
+            cb(null, { info });
         } catch (err) {
             cb(err);
         }
@@ -369,6 +382,10 @@ const adminServices = {
             if (method) {
                 throw new Error('此付款方式已存在！');
             }
+            await Method.create({
+                name
+            });
+
             cb(null, {
                 status: '已新增付款方式！'
             });

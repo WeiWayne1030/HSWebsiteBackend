@@ -5,12 +5,13 @@ module.exports = (sequelize, DataTypes) => {
   class Cart extends Model {
     static associate(models) {
       Cart.belongsTo (models.Stock, { foreignKey: 'StockId' }),
-      Cart.belongsTo (models.Order, { foreignKey: 'OrderId' })
+      Cart.hasMany (models.Order, { foreignKey: 'CartId' })
+      Cart.belongsTo (models.User, { foreignKey: 'UserId' })
     }
   }
   Cart.init({
     itemQuantity: DataTypes.DECIMAL,
-    OrderId: DataTypes.INTEGER,
+    UserId: DataTypes.INTEGER,
     StockId: DataTypes.INTEGER,
     amount: DataTypes.DECIMAL,
   }, {

@@ -21,11 +21,11 @@ const adminController = {
   getAdminItems: (req, res, next) => {
     adminServices.getAdminItems(req, (err, data) => err ? next(err) : res.status(200).json(data))
   },
-  getOrders: (req, res, next) => {
-    adminServices.getOrders(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  getOrderInfos: (req, res, next) => {
+    adminServices.getOrderInfos(req, (err, data) => err ? next(err) : res.status(200).json(data))
   },
-  getOrder: (req, res, next) => {
-    adminServices.getOrder(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  getOrderInfo: (req, res, next) => {
+    adminServices.getOrderInfo(req, (err, data) => err ? next(err) : res.status(200).json(data))
   },
   putStock: (req, res, next) => {
     adminServices.putStock(req, (err, data) => err ? next(err) : res.status(200).json(data))
@@ -42,6 +42,13 @@ const adminController = {
   postMethod: (req, res, next) => {
     adminServices.postMethod(req, (err, data) => err ? next(err) : res.status(200).json(data))
   },
+  getOrderInfos: (req, res, next) => {
+    adminServices.getOrderInfos(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  getOrderInfo: (req, res, next) => {
+    adminServices.getOrderInfo(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  }
+  
 }
 
 module.exports = adminController
