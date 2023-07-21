@@ -3,6 +3,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 const express = require('express')
 const cors = require('cors')
+const bodyParser = require('body-parser')
 
 const routes = require('./routes')
 
@@ -12,6 +13,7 @@ const port = process.env.PORT || 3000
 app.use(cors())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
+app.use(bodyParser.json())
 
 app.use(routes)
 
