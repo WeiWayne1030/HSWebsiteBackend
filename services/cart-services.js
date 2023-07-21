@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const { Item, Stock, Color, Size, Cart, Category } = require('../models')
 const helpers = require('../_helpers');
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
@@ -143,6 +144,12 @@ const cartServices = {
           cb(err);
       }
   }
+=======
+const { Item, Category, Stock, Color, Size } = require('../models')
+
+const cartServices = {
+  
+>>>>>>> 78ba64403d9cd869e89b70947594f13e8f3a6409
 }
 
 

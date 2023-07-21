@@ -4,8 +4,15 @@ const upload = require('../middleware/multer')
 
 const userController = require('../controllers/user-controller')
 const itemController = require('../controllers/item-controller')
+<<<<<<< HEAD
 const cartController = require('../controllers/cart-controller')
 const adminController = require('../controllers/admin-controller')
+=======
+const orderController = require('../controllers/order-controller')
+
+const { authenticatedUser, authenticated } = require('../middleware/auth')
+//const adminController = require('../controllers/admin-controller')
+>>>>>>> 78ba64403d9cd869e89b70947594f13e8f3a6409
 
 const { authenticatedAdmin, authenticatedUser, authenticated } = require('../middleware/auth')
 
@@ -14,6 +21,7 @@ router.post('/api/admin/signIn', adminController.signIn)
 router.post('/api/users/signIn', userController.signIn)
 router.post('/api/users', userController.signUp)
 
+<<<<<<< HEAD
 //user
 router.get('/api/users/:id/profile', authenticated, authenticatedUser, userController.getUser)
 router.put('/api/users/:id/profile',upload.single('image'), authenticated, authenticatedUser, userController.putUser)
@@ -50,6 +58,21 @@ router.delete('/api/carts/:id', authenticated, authenticatedUser, cartController
 router.delete('/api/carts', authenticated, authenticatedUser, cartController.delCarts)
 
 
+=======
+//item
+router.get('/api/items',authenticated, authenticatedUser, itemController.getItems)
+router.get('/api/items/:id',authenticated, authenticatedUser, itemController.getItem)
+//router.post('/api/cart/:id', authenticated, authenticatedUser, cartController.addToCart)
+
+//order
+// router.post('/api/order', authenticated, authenticatedUser, userController.postOder)
+router.get('/api/orders', authenticated, authenticatedUser, orderController.getOrders);
+
+//cart
+//router.put('/api/cart/:id', authenticated, authenticatedUser, userController.putCart)
+//router.delete('/api/cart/:id', authenticated, authenticatedUser, userController.delCart)
+//router.delete('/api/carts', authenticated, authenticatedUser, userController.delCarts)
+>>>>>>> 78ba64403d9cd869e89b70947594f13e8f3a6409
 
 
 module.exports = router

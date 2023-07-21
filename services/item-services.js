@@ -1,4 +1,5 @@
 const { Item, Category, Stock, Color, Size } = require('../models')
+<<<<<<< HEAD
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 
 const itemServices = {
@@ -40,6 +41,35 @@ const itemServices = {
     try {
       const { id } = req.params;
       if (!id ) {
+=======
+
+const itemServices = {
+getItems: async (req, cb) => {
+  try {
+    let items = await Item.findAll({
+      attributes: ['name', 'image', 'amount'],
+      include: [
+        {
+          model: Category,
+          attributes: ['name'],
+        },
+      ],
+      order: [['createdAt', 'DESC']],
+    });
+
+    if (!items || items.length === 0) {
+      throw new Error("目前沒有任何商品！");
+    }
+    return cb(null, items);
+  } catch (err) {
+    return cb(err);
+  }
+},
+  getItem: async (req, cb) => {
+    try {
+      const { id } = req.params;
+      if (!id) {
+>>>>>>> 78ba64403d9cd869e89b70947594f13e8f3a6409
         throw new Error("商品不存在！");
       }
       const items = await Item.findAll({
@@ -65,9 +95,12 @@ const itemServices = {
         ],
         order: [['createdAt', 'DESC']]
       })
+<<<<<<< HEAD
       if (!items.state === false) {
         throw new Error("商品已下架！");
       }
+=======
+>>>>>>> 78ba64403d9cd869e89b70947594f13e8f3a6409
       if (items.length === 0) {
       return cb(null, {});
     }
@@ -76,7 +109,11 @@ const itemServices = {
     } catch (err) {
         return cb(err);
     }
+<<<<<<< HEAD
   }, 
+=======
+  },
+>>>>>>> 78ba64403d9cd869e89b70947594f13e8f3a6409
 }
 
 
