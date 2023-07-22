@@ -149,8 +149,7 @@ const userServices = {
     },
     ordeInfo: async (req, cb) => {
         try {
-            const { orderId } = req.params;
-            console.log(orderId);
+            const { id } = req.params;
             const userId = helpers.getUser(req).id;
             const { shipName, address, shipTel, MethodId } = req.body;
             const lastOrder = await OrderInfo.findOne({
@@ -176,7 +175,7 @@ const userServices = {
             const orderInfo = await OrderInfo.create({
                 orderNumber: orderNumber,
                 UserId: userId,
-                OrderId: orderId,
+                OrderId: id,
                 shipName,
                 address,
                 shipTel,
@@ -274,39 +273,52 @@ const userServices = {
         )
     },
     getOrders: async (req, cb) => {
-        try {
-            const userId = helpers.getUser(req).id;
-            const orders = await Order.findAll({
-                where: { UserId: userId },
-                include: [
-                    {
-                        model: Cart,
-                        include: [
-                            {
-                                model: Stock,
-                                include: [
-                                    {
-                                        model: Item,
-                                    },
-                                ],
-                            },
-                        ],
-                    },
-                    {
-                        model: OrderInfo,
-                        include: [
-                            {
-                                model: Method,
-                            },
-                        ],
-                    },
-                ],
-            });
-            cb(null, orders);
-        } catch (err) {
-            cb(err);
+    try {
+        const user = helpers.getUser(req);
+        if (!user || !user.id) {
+            throw new Error('無法取得使用者資訊或使用者ID');
         }
-    },
+        const userId = user.id;
+        const orders = await Order.findAll({
+            where: { UserId: userId,
+             },
+            include: [
+                {
+                    model: Cart,
+                        // include: [
+                        //     {
+                        //         model: Stock,
+                        //         include: [
+                        //             {
+                        //                 model: Item,
+                        //             },
+                        //         ],
+                        //     },
+                        // ],
+                },
+                {
+                    model: OrderInfo,
+                    include: [
+                        {
+                            model: Method,
+
+                        },
+                    ],
+                },
+            ],
+        });
+        if (!orders) {
+            throw new Error('無法取得訂單資訊');
+        }
+        if (orders.length === 0) {
+            throw new Error('無訂單資訊');
+        }   
+        cb(null, orders);
+    } catch (err) {
+        cb(err);
+    }
+},
+
     getOrder: async (req, cb) => {
         try {
             const { orderId } = req.params;

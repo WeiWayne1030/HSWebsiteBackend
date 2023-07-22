@@ -15,6 +15,8 @@ if (config.use_env_variable) {
   sequelize = new Sequelize(config.database, config.username, config.password, config);
 }
 
+const models = {};
+
 fs
   .readdirSync(__dirname)
   .filter(file => {
@@ -30,6 +32,7 @@ Object.keys(db).forEach(modelName => {
     db[modelName].associate(db);
   }
 });
+
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;

@@ -26,7 +26,7 @@ router.put('/api/users/:id/profile',upload.single('image'), authenticated, authe
 //order
 //填寫訂單資料
 router.post('/api/order/:id/orderInfo', authenticated, authenticatedUser, userController.ordeInfo)
-//建立訂單
+//建立訂單（未完成）
 router.post('/api/cart/:id/orders', authenticated, authenticatedUser, userController.buildOrder)
 //修改訂單資料
 router.put('/api/orderInfos/:InfoId', authenticated, authenticatedUser, userController.putOrderInfo)
