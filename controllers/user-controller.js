@@ -14,8 +14,8 @@ const userController = {
   putUser: (req, res, next) => {
       userServices.putUser(req, (err, data) => err ? next(err) : res.status(200).json(data))
   },
-  ordeInfo: (req, res, next) => {
-      userServices.ordeInfo(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  orderInfo: (req, res, next) => {
+      userServices.orderInfo(req, (err, data) => err ? next(err) : res.status(200).json(data))
   },
   editOrder: (req, res, next) => {
       userServices.editOrder(req, (err, data) => err ? next(err) : res.status(200).json(data))

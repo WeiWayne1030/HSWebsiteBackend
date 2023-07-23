@@ -202,7 +202,7 @@ const adminServices = {
             cb(err)
         }
     },
-    getOrderInfos: async (req, cb) =>{
+    slGetOrderInfos: async (req, cb) =>{
         try {
             const DEFAULT_LIMIT = 9
             const MethodId = Number(req.query.MethodId) || ''
@@ -214,47 +214,35 @@ const adminServices = {
                     {
                     model: Method,
                     where:  {  ...MethodId ? { MethodId } : {} },   
-                },
-                {
-                    model: Order,
-                    include: [
-                        { model: User }
-                    ],
-                    attributes: ['state', 'total', 'createdAt', 'updatedAt']
                 }],
                 limit,
                 offset
             })
             const methods = Method.findAll({ raw: true })
-            const pagination = getPagination(limit, page, orders.count)
-            cb(null, { orderInfos, methods,MethodId, pagination })
+            const pagination = getPagination(limit, page, orderInfos.count)
+            cb(null, { orderInfos, methods, MethodId, pagination })
         } catch (err) {
             cb(err)
         }
     },
-    getOrderInfo: async (req, cb) => {
+    slGetOrderInfo: async (req, cb) => {
         try {
-            const id = req.params.InfoId;
+            const id = req.params.id;
             if (!id) {
                 throw new Error('此訂單不存在！');
             }
-            const info = await OrderInfo.findOne({
+            const orderInfo = await OrderInfo.findOne({
                 id,
                 include: [{
-                        model: Method
-                    },{
-                        model: Order,
-                        include: [
-                            { model: User }
-                        ]
-                    }],
+                        model: Method   
+            }],
 
                 order: [['createdAt', 'DESC']] 
             });
-            if (!info) {
+            if (!orderInfo) {
                 throw new Error('找不到對應的訂單！');
             }
-            cb(null, { info });
+            cb(null, orderInfo);
         } catch (err) {
             cb(err);
         }

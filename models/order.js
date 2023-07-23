@@ -6,11 +6,11 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Order.belongsTo (models.Cart, { foreignKey: 'CartId'})
       Order.belongsTo (models.User, { foreignKey: 'UserId' })
-      Order.hasMany(models.OrderInfo, { foreignKey: 'OrderInfoId'});
+      Order.belongsTo(models.OrderInfo, { foreignKey: 'OrderInfoId'});
     }
   }
   Order.init({
-    productNumber: DataTypes.STRING,
+    orderNumber: DataTypes.STRING,
     state: DataTypes.BOOLEAN,
     itemQuantity: DataTypes.NUMBER,
     OrderInfoId: DataTypes.NUMBER,

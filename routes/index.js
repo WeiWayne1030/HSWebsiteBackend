@@ -25,18 +25,18 @@ router.put('/api/users/:id/profile',upload.single('image'), authenticated, authe
 
 //order
 //填寫訂單資料
-router.post('/api/order/:id/orderInfo', authenticated, authenticatedUser, userController.ordeInfo)
-//建立訂單（未完成）
+router.post('/api/order/:id/orderInfo', authenticated, authenticatedUser, userController.orderInfo)
+//建立訂單（未完成））
 router.post('/api/cart/:id/orders', authenticated, authenticatedUser, userController.buildOrder)
-//修改訂單資料
+//修改訂單資料（付款資料部分）
 router.put('/api/orderInfos/:InfoId', authenticated, authenticatedUser, userController.putOrderInfo)
 //取得該使用者單筆訂單資料
-router.get('/api/orderInfos/:InfoId', authenticated, authenticatedUser, userController.getOrders)
+router.get('/api/orders/:id', authenticated, authenticatedUser, userController.getOrder)
 //取得該使用者所有訂單資料
 router.get('/api/orders', authenticated, authenticatedUser, userController.getOrders)
 
 //admin
-//下架商品
+//下架商品（未完成）
 router.post('/api/admin/stock/:id/remove', authenticated, authenticatedAdmin, adminController.removeItem)
 //上架商品
 router.post('/api/admin/item',upload.single('image'), authenticated, authenticatedAdmin, adminController.postItem)
@@ -52,9 +52,9 @@ router.put('/api/admin/stock/:id',upload.single('image'), authenticated, authent
 
 //admin order
 //取得所有訂單資料
-router.get('/api/admin/orders', authenticated, authenticatedAdmin, adminController.getOrderInfos)
+router.get('/api/admin/orderInfos', authenticated, authenticatedAdmin, adminController.slGetOrderInfos)
 //取得單筆訂單資料
-router.get('/api/admin/order/:id', authenticated, authenticatedAdmin, adminController.getOrderInfo)
+router.get('/api/admin/orderInfos/:id', authenticated, authenticatedAdmin, adminController.slGetOrderInfo)
 
 
 //admin etc

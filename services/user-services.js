@@ -147,7 +147,7 @@ const userServices = {
                 cb(err)
             })
     },
-    ordeInfo: async (req, cb) => {
+    orderInfo: async (req, cb) => {
         try {
             const { id } = req.params;
             const userId = helpers.getUser(req).id;
@@ -169,11 +169,13 @@ const userServices = {
                 throw new Error('只能編輯自己的訂單');
             }
             const orderInfo = await OrderInfo.create({
+                orderNumber: order.orderNumber,
                 UserId: userId,
                 shipName,
                 address,
                 shipTel,
                 MethodId,
+                total: order.total,
             });
             cb(null, orderInfo);
         } catch (err) {
@@ -278,23 +280,20 @@ const userServices = {
             include: [
                 {
                     model: Cart,
-                        // include: [
-                        //     {
-                        //         model: Stock,
-                        //         include: [
-                        //             {
-                        //                 model: Item,
-                        //             },
-                        //         ],
-                        //     },
-                        // ],
+                    include: [
+                        {
+                            model: Stock,
+                            include: [
+                                {
+                                    model: Item
+                                }]
+                    }]    
                 },
                 {
                     model: OrderInfo,
                     include: [
                         {
                             model: Method,
-
                         },
                     ],
                 },
@@ -313,39 +312,48 @@ const userServices = {
 },
 
     getOrder: async (req, cb) => {
-        try {
-            const { orderId } = req.params;
-            const userId = helpers.getUser(req).id;
-            const order = await Order.findOne({
-                where: { id: orderId, UserId: userId },
-                include: [
-                    {
-                        model: Cart,
-                        include: [
-                            {
-                                model: Stock,
-                                include: [
-                                    {
-                                        model: Item,
-                                    },
-                                ],
-                            },
-                        ],
-                    },
-                    {
-                        model: OrderInfo,
-                        include: [
-                            {
-                                model: Method,
-                            },
-                        ],
-                    },
-                ],
-            });
-            cb(null, order);
-        } catch (err) {
-            cb(err);
+    try {
+        const { orderId } = req.params;
+        const userId = helpers.getUser(req).id;
+        
+        const order = await Order.findOne({
+            where: { id: orderId, UserId: userId },
+            include: [
+                {
+                    model: Cart,
+                    include: [
+                        {
+                            model: Stock,
+                        }
+                    ]
+                },
+                {
+                    model: OrderInfo,
+                    include: [
+                        {
+                            model: Method,
+                        }
+                    ]
+                }
+            ],
+        });
+
+        if (!order) {
+            throw new Error('無法取得訂單資訊');
         }
+
+        if (order.Carts.length === 0) {
+            throw new Error('無訂單資訊');
+        }
+
+        if (order.UserId !== userId) {
+            throw new Error('只能編輯自己的訂單');
+        }
+
+        cb(null, order, order.Carts);
+    } catch (err) {
+        cb(err);
     }
+}
 }
 module.exports = userServices
