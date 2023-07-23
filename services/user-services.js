@@ -152,35 +152,28 @@ const userServices = {
             const { id } = req.params;
             const userId = helpers.getUser(req).id;
             const { shipName, address, shipTel, MethodId } = req.body;
-            const lastOrder = await OrderInfo.findOne({
-                order: [['orderNumber', 'DESC']],
-            });
 
-            let orderNumber;
-            if (lastOrder) {
-                const lastOrderNumber = lastOrder.orderNumber;
-                const lastOrderNumberInt = parseInt(lastOrderNumber.substring(2));
-                orderNumber = `OR${(lastOrderNumberInt + 1).toString().padStart(6, '0')}`;
-            } else {
-                orderNumber = 'OR100001';
-            }
 
             const order = await Order.findOne({
-                where: { UserId: userId },
+                where: { OrderInfoId: id },
             });
 
             const method = await Method.findByPk(MethodId);
-
-            const totalAmount = order.total;
+            if (!method) {
+                throw new Error('運送方式不存在');
+            }
+            if (!order) {
+                throw new Error('訂單不存在');
+            }
+            if (order.UserId !== userId) {
+                throw new Error('只能編輯自己的訂單');
+            }
             const orderInfo = await OrderInfo.create({
-                orderNumber: orderNumber,
                 UserId: userId,
-                OrderId: id,
                 shipName,
                 address,
                 shipTel,
                 MethodId,
-                total: totalAmount,
             });
             cb(null, orderInfo);
         } catch (err) {

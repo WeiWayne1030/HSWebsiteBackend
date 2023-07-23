@@ -29,8 +29,11 @@ module.exports = {
       });
 
       // Function to generate random OrderInfoId based on the number of Users
-      function getRandomOrderInfoId() {
-        return faker.random.arrayElement(userIds);
+      function getRandomOrderInfoId(userId) {
+        // Get the index of the current userId in the sorted userIds array
+        const userIdIndex = userIds.indexOf(userId);
+        // Add 1 to the index to get the corresponding OrderInfoId (as it starts from 1)
+        return userIdIndex !== -1 ? userIdIndex + 1 : null;
       }
 
       // Function to generate the order number based on UserId
@@ -41,7 +44,7 @@ module.exports = {
 
       // Generate ordersData array based on the calculated values
       for (const cart of carts) {
-        const randomOrderInfoId = getRandomOrderInfoId();
+        const randomOrderInfoId = getRandomOrderInfoId(cart.UserId);
 
         const itemQuantity = carts.filter((c) => c.UserId === cart.UserId).length;
 

@@ -12,11 +12,17 @@ module.exports = {
       shipName: {
         type: Sequelize.STRING
       },
+      orderNumber: {
+        type: Sequelize.STRING
+      },
       UserId: {
         type: Sequelize.INTEGER
       },
       shipTel:{
         type: Sequelize.STRING
+      },
+      total: {
+        type: Sequelize.INTEGER
       },
       MethodId: {
         type: Sequelize.INTEGER

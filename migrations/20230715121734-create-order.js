@@ -24,10 +24,10 @@ module.exports = {
       OrderInfoId: {
         type: Sequelize.INTEGER
       },
-      total: {
+      itemQuantity: {
         type: Sequelize.INTEGER
       },
-      itemQuantity: {
+      total: {
         type: Sequelize.INTEGER
       },
       createdAt: {

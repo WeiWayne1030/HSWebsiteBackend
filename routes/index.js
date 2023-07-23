@@ -52,9 +52,9 @@ router.put('/api/admin/stock/:id',upload.single('image'), authenticated, authent
 
 //admin order
 //取得所有訂單資料
-router.get('/api/admin/orderInfos', authenticated, authenticatedAdmin, adminController.getOrderInfos)
+router.get('/api/admin/orders', authenticated, authenticatedAdmin, adminController.getOrderInfos)
 //取得單筆訂單資料
-router.get('/api/admin/orderInfos/:InfoId', authenticated, authenticatedAdmin, adminController.getOrderInfo)
+router.get('/api/admin/order/:id', authenticated, authenticatedAdmin, adminController.getOrderInfo)
 
 
 //admin etc
