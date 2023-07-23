@@ -9,6 +9,9 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      orderNumber: {
+        type: Sequelize.STRING
+      },
       state:{
         type: Sequelize.BOOLEAN
       },
@@ -16,6 +19,9 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       UserId: {
+        type: Sequelize.INTEGER
+      },
+      OrderInfoId: {
         type: Sequelize.INTEGER
       },
       total: {

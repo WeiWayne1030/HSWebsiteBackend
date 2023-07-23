@@ -6,12 +6,14 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Order.belongsTo (models.Cart, { foreignKey: 'CartId'})
       Order.belongsTo (models.User, { foreignKey: 'UserId' })
-      Order.hasOne(models.OrderInfo, { foreignKey: 'OrderId' });
+      Order.hasMany(models.OrderInfo, { foreignKey: 'OrderInfoId'});
     }
   }
   Order.init({
+    orderNumber: DataTypes.STRING,
     state: DataTypes.BOOLEAN,
     itemQuantity: DataTypes.NUMBER,
+    OrderInfoId: DataTypes.NUMBER,
     CartId: DataTypes.NUMBER,
     UserId: DataTypes.NUMBER,
     total: DataTypes.NUMBER,

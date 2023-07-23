@@ -6,16 +6,14 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       OrderInfo.belongsTo(models.User, { foreignKey: 'UserId' }),
       OrderInfo.belongsTo(models.Method, { foreignKey: 'MethodId' }),
-      OrderInfo.belongsTo(models.Order, { foreignKey: 'OrderId', as: 'order' });
+      OrderInfo.hasMany(models.Order, { foreignKey: 'orderInfo', as: 'order' });
     }
   }
   OrderInfo.init({
-    orderNumber: DataTypes.STRING,
       shipName: DataTypes.STRING,
       UserId:  DataTypes.INTEGER,
       shipTel: DataTypes.STRING,
       MethodId: DataTypes.INTEGER,
-      OrderId: DataTypes.INTEGER,
       address: DataTypes.STRING,
   }, {
     sequelize,

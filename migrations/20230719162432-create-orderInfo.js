@@ -9,9 +9,6 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      orderNumber: {
-        type: Sequelize.STRING
-      },
       shipName: {
         type: Sequelize.STRING
       },
@@ -22,9 +19,6 @@ module.exports = {
         type: Sequelize.STRING
       },
       MethodId: {
-        type: Sequelize.INTEGER
-      },
-      orderId: {
         type: Sequelize.INTEGER
       },
       address:{
