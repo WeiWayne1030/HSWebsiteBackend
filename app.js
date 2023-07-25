@@ -14,9 +14,9 @@ app.use(cors())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(bodyParser.json())
-
+const cors = require('cors')
 app.use(routes)
-
+app.use(cors())
 app.listen(port, () => console.log(`This server is listening on port ${port}!`))
 
 module.exports = app
