@@ -69,9 +69,9 @@ router.post('/api/admin/method', authenticated, authenticatedAdmin, adminControl
 
 //item
 //取得所有商品
-router.get('/api/items',authenticated, authenticatedUser, itemController.getItems)
+router.get('/api/items',itemController.getItems)
 //取得單筆商品
-router.get('/api/items/:id',authenticated, authenticatedUser, itemController.getItem)
+router.get('/api/items/:id',itemController.getItem)
 
 
 //cart
