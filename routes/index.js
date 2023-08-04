@@ -38,7 +38,6 @@ router.get('/api/orders', authenticated, authenticatedUser, userController.getOr
 //admin
 //查詢所有商品（上架下架）
 router.get('/api/admin/items', authenticated, authenticatedAdmin, adminController.getItems)
-
 //下架商品（未完成）
 router.post('/api/admin/stock/:id/remove', authenticated, authenticatedAdmin, adminController.removeItem)
 //上架商品
