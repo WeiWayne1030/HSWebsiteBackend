@@ -39,6 +39,28 @@ const adminServices = {
             cb(err)
         }
     },
+    getItems: async (req, cb) => {
+        const categoryId = Number(req.query.CategoryId) || null; // Use "CategoryId" instead of "categoryId"
+        try {
+            const [items, categories] = await Promise.all([
+            Item.findAll({
+                include: Category,
+                where: categoryId !== null ? { categoryId } : {},
+                nest: true,
+                raw: true,
+            }),
+            Category.findAll({ raw: true }),
+            ]);
+
+            cb(null, {
+            items,
+            categories,
+            categoryId,
+            });
+        } catch (err) {
+            cb(err);
+        }
+    },
     delItem: async (req, cb) => {
         try {
             const id = req.params.id;

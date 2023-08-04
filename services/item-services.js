@@ -3,38 +3,29 @@ const { getOffset, getPagination } = require('../helpers/pagination-helper')
 
 const itemServices = {
   getItems: async (req, cb) => {
-    try {
-      const DEFAULT_LIMIT = 9
-      const CategoryId = Number(req.query.CategoryId) || ''
-      const page = Number(req.query.page) || 1
-      const limit = Number(req.query.limit) || DEFAULT_LIMIT
-      const offset = getOffset(limit, page)
-      let items = await Item.findAndCountAll({
-        where: { state: true }, 
-        attributes: ['name', 'image', 'price'],
-        include: [
-          {
-            model: Category,
-            where: {  // 新增查詢條件
-            ...CategoryId ? { CategoryId } : {} // 檢查 categoryId 是否為空值
-          },
-            attributes: ['name'],
-          },
-        ],
-        order: [['createdAt', 'DESC']],
-        limit,
-        offset,
-      });
-      let categories = await Category.findAll({ raw: true })
-      if (!items || items.length === 0) {
-        throw new Error("目前沒有任何商品！");
-      }
-      const pagination = getPagination(limit, page, items.count)
-      return cb(null, items, categories, CategoryId, pagination);
-    } catch (err) {
-      return cb(err);
-    }
-  },
+  const categoryId = Number(req.query.CategoryId) || null; // Use "CategoryId" instead of "categoryId"
+
+  try {
+    const [items, categories] = await Promise.all([
+      Item.findAll({
+        where: { state: true },
+        include: Category,
+        where: categoryId !== null ? { categoryId } : {},
+        nest: true,
+        raw: true,
+      }),
+      Category.findAll({ raw: true }),
+    ]);
+
+    cb(null, {
+      items,
+      categories,
+      categoryId,
+    });
+  } catch (err) {
+    cb(err);
+  }
+},
   getItem: async (req, cb) => {
     try {
       const { id } = req.params;

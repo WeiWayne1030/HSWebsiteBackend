@@ -6,6 +6,9 @@ const adminController = {
    signIn: (req, res, next) => {
       adminServices.signIn(req, (err, data) => err ? next(err) : res.status(200).json(data))
   },
+  getItems: (req, res, next) => {
+      adminServices.getItems(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
    delItem: (req, res, next) => {
       adminServices.delItem(req, (err, data) => err ? next(err) : res.status(200).json(data))
   },
