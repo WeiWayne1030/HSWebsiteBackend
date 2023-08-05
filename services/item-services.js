@@ -3,14 +3,14 @@ const { getOffset, getPagination } = require('../helpers/pagination-helper')
 
 const itemServices = {
   getItems: async (req, cb) => {
-  const categoryId = Number(req.query.CategoryId) || null; // Use "CategoryId" instead of "categoryId"
+  const categoryId = Number(req.query.CategoryId) || ""; // Use "CategoryId" instead of "categoryId"
 
   try {
     const [items, categories] = await Promise.all([
       Item.findAll({
         where: { state: true },
         include: Category,
-        where: categoryId !== null ? { categoryId } : {},
+        where: categoryId !== "" ? { categoryId } : {},
         nest: true,
         raw: true,
       }),
