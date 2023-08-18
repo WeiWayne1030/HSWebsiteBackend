@@ -15,6 +15,14 @@ module.exports = {
         "SELECT id FROM Users WHERE role <> 'seller' ORDER BY id ASC",
         { type: queryInterface.sequelize.QueryTypes.SELECT }
       );
+      const orderInfos = await queryInterface.sequelize.query(
+        'SELECT id FROM OrderInfos ORDER BY id ASC',
+        {
+          type: queryInterface.sequelize.QueryTypes.SELECT,
+        }
+      );
+
+const orderInfoIds = orderInfos.map((orderInfo) => orderInfo.id);
 
       const ordersData = [];
       const userCartTotals = {}; // To store the total amount for each UserId
@@ -29,11 +37,11 @@ module.exports = {
       });
 
       // Function to generate random OrderInfoId based on the number of Users
-      function getRandomOrderInfoId(userId) {
-        // Get the index of the current userId in the sorted userIds array
-        const userIdIndex = userIds.indexOf(userId);
-        // Add 1 to the index to get the corresponding OrderInfoId (as it starts from 1)
-        return userIdIndex !== -1 ? userIdIndex + 1 : null;
+      function getRandomOrderInfoId(orderInfoIds) {
+        // Get a random index within the range of orderInfoIds length
+        const randomIndex = Math.floor(Math.random() * orderInfoIds.length);
+        // Get the corresponding OrderInfoId based on the random index
+        return orderInfoIds[randomIndex];
       }
 
       // Function to generate the order number based on UserId
