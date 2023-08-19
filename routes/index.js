@@ -11,9 +11,9 @@ const { authenticatedAdmin, authenticatedUser, authenticated } = require('../mid
 
 // signup & signin
 //商家登入
-router.post('/api/admin/signIn', adminController.signIn)
+router.post('/api/admin/signin', adminController.signIn)
 //使用者登入
-router.post('/api/users/signIn', userController.signIn)
+router.post('/api/users/signin', userController.signIn)
 //使用者註冊
 router.post('/api/users', userController.signUp)
 
