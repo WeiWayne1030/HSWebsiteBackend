@@ -1,71 +1,54 @@
-'use strict'
+'use strict';
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-
     const colors = await queryInterface.sequelize.query(
       'SELECT id FROM Colors',
       { type: queryInterface.sequelize.QueryTypes.SELECT }
-    )
-
-    const sizes = await queryInterface.sequelize.query('SELECT id FROM Sizes;', {
-      type: queryInterface.sequelize.QueryTypes.SELECT
-    })
+    );
 
     const items = await queryInterface.sequelize.query(
       "SELECT id FROM Items WHERE state <> 'true'",
       { type: queryInterface.sequelize.QueryTypes.SELECT }
-    )
+    );
 
-    const existingPairs = new Set() // 用來儲存已存在的 UserId-ItemId pair
-    const fakeStock = []
-    let productNumberCounter = 1
+    const fakeStock = [];
+    let productNumberCounter = 1;
 
-    for (let i = 0; i < items.length; i++) {
-      const itemId = items[i].id
-      const sizeIds = new Set()
-      const colorIds = new Set()
+    for (const itemId of items.map(item => item.id)) {
+      const itemColors = [...colors]; // Create a copy of colors array for each item
+      const itemColorIds = new Set(); // To keep track of used ColorIds for the item
 
-      while (sizeIds.size < 6) {
-        const sizeId = sizes[Math.floor(Math.random() * sizes.length)].id
-        sizeIds.add(sizeId)
-      }
+      while (itemColors.length > 0) {
+        const productNumber = `ST${productNumberCounter.toString().padStart(10, '0')}`;
+        productNumberCounter++;
 
-      while (colorIds.size < 11) {
-        const colorId = colors[Math.floor(Math.random() * colors.length)].id
-        colorIds.add(colorId)
-      }
+        const randomColorIndex = Math.floor(Math.random() * itemColors.length);
+        const randomColor = itemColors[randomColorIndex];
 
-      for (const sizeId of sizeIds) {
-        for (const colorId of colorIds) {
-          const pair = `${itemId}-${sizeId}-${colorId}` // 建立 ItemId-SizeId-ColorId pair
-          // 檢查是否已存在相同的 ItemId-SizeId-ColorId pair，若存在則重新選取
-          if (existingPairs.has(pair)) {
-            continue
-          }
+        if (!itemColorIds.has(randomColor.id)) {
+          itemColorIds.add(randomColor.id);
+          itemColors.splice(randomColorIndex, 1);
 
-          existingPairs.add(pair) // 將新的 ItemId-SizeId-ColorId pair 加入已存在的集合
-
-          const itemstock = Math.floor(Math.random() * 10) + 1
-          const productNumber = `ST${productNumberCounter.toString().padStart(10, '0')}`
-          productNumberCounter++ // Increment the counter for the next productNumber
           fakeStock.push({
             productNumber,
-            itemstock,
-            ColorId: colorId,
-            SizeId: sizeId,
+            ColorId: randomColor.id,
             ItemId: itemId,
             createdAt: new Date(),
             updatedAt: new Date()
           });
         }
+
+        if (fakeStock.length >= 20) {
+          break;
+        }
       }
     }
 
-    await queryInterface.bulkInsert('Stocks', fakeStock, {})
+    await queryInterface.bulkInsert('Stocks', fakeStock, {});
   },
 
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.bulkDelete('Stocks', null, {})
+    await queryInterface.bulkDelete('Stocks', null, {});
   }
-}
+};

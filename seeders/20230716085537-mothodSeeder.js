@@ -3,7 +3,7 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
     await queryInterface.bulkInsert('Methods',
-      ['貨到付款', '信用卡付款','轉帳付款']
+      ['貨到付款', 'LinePay付款','轉帳付款']
         .map(item => {
           return {
             name: item,

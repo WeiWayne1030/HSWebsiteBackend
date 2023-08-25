@@ -12,6 +12,12 @@ module.exports = {
       name: {
         type: Sequelize.STRING
       },
+      itemStock: {
+        type: Sequelize.INTEGER
+      },
+      SizeId: {
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

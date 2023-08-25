@@ -6,15 +6,13 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       Color.hasMany(models.Stock, { foreignKey: 'ColorId' 
       })
-      Color.belongsToMany(models.Size, {
-        through: models.Stock, 
-        foreignKey: 'ColorId', 
-        as: 'stockColor'
-      })
+      Color.belongsTo(models.Size, { foreignKey: 'SizeId' });
     }
   }
   Color.init({
     name: DataTypes.STRING,
+    itemStock: DataTypes.INTEGER,
+    SizeId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Color',

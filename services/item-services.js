@@ -42,16 +42,17 @@ const itemServices = {
         },
         {
           model: Stock,
-          attributes: ['itemStock'],
           include: [
             {
               model: Color,
-              attributes: ['name'],
+              attributes: ['name','itemStock'],
+              include:[
+                {
+                  model: Size,
+                  attributes: ['name'],
+                }
+              ]
             },
-            {
-              model: Size,
-              attributes: ['name'],
-            }
           ]
         }
       ],
@@ -66,7 +67,23 @@ const itemServices = {
       throw new Error("商品已下架！");
     }
 
-    const data = { item };
+    const mergedStocks = {};
+    item.Stocks.forEach(stock => {
+      const colorName = stock.Color.name;
+      if (!mergedStocks[colorName]) {
+        mergedStocks[colorName] = {
+          color: stock.Color.name,
+          sizes: [],
+        };
+      }
+      mergedStocks[colorName].sizes.push(stock.Color.Size);
+    });
+
+    // Convert mergedStocks object into an array
+    const mergedStocksArray = Object.values(mergedStocks);
+
+    const data = { item, mergedStocks: mergedStocksArray };
+
 
     return cb(null, data);
   } catch (err) {
