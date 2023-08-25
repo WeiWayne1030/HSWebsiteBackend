@@ -27,46 +27,52 @@ const itemServices = {
   }
 },
   getItem: async (req, cb) => {
-    try {
-      const { id } = req.params;
-      if (!id ) {
-        throw new Error("商品不存在！");
-      }
-      const items = await Item.findAll({
-        where: { id },
-        include: [
-          {
-            model: Category,
-            attributes: ['name'],
-          },
-          {
-            model: Stock,
-            attributes:['itemStock'],
-              include:[{
-                model:Color,
-                attributes:['name']
-              },
-              {
-                model:Size,
-                attributes:['name']
-              }
-            ]
-          }
-        ],
-        order: [['createdAt', 'DESC']]
-      })
-      if (!items.state === false) {
-        throw new Error("商品已下架！");
-      }
-      if (items.length === 0) {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      throw new Error("商品不存在！");
+    }
+    
+    const item = await Item.findOne({
+      where: { id },
+      include: [
+        {
+          model: Category,
+          attributes: ['name'],
+        },
+        {
+          model: Stock,
+          attributes: ['itemStock'],
+          include: [
+            {
+              model: Color,
+              attributes: ['name'],
+            },
+            {
+              model: Size,
+              attributes: ['name'],
+            }
+          ]
+        }
+      ],
+      order: [['createdAt', 'DESC']],
+    });
+    
+    if (!item) {
       return cb(null, {});
     }
-      const item = items[0]
-      return cb(null, item);
-    } catch (err) {
-        return cb(err);
+    
+    if (!item.state) { // Assuming "state" is a property of the item
+      throw new Error("商品已下架！");
     }
-  }, 
+
+    const data = { item };
+
+    return cb(null, data);
+  } catch (err) {
+    return cb(err);
+  }
+}
 }
 
 
