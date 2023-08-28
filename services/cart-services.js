@@ -57,7 +57,7 @@ const cartServices = {
   },
   addToCart: async (req, cb) => {
     try {
-      const id = req.params.id;
+      const id = Number(req.body.ColorId);
       
       const itemQuantity = Number(req.body.itemQuantity); 
       

@@ -80,11 +80,11 @@ router.get('/api/items/:id',itemController.getItem)
 //取得購物車
 router.get('/api/carts', authenticated, authenticatedUser, cartController.getCarts)
 //新增購物車
-router.post('/api/carts/:id', authenticated, authenticatedUser, cartController.addToCart)
+router.post('/api/cart', authenticated, authenticatedUser, cartController.addToCart)
 //刪除購物車
 router.delete('/api/carts/:id', authenticated, authenticatedUser, cartController.delCart)
 //刪除所有購物車
-router.delete('/api/carts', authenticated, authenticatedUser, cartController.delCarts)
+router.delete('/api/cart', authenticated, authenticatedUser, cartController.delCarts)
 
 
 
