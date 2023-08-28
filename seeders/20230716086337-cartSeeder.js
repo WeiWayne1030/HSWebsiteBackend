@@ -4,15 +4,14 @@ const faker = require('faker');
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    // Fetch users with role <> 'seller'
+
     const users = await queryInterface.sequelize.query(
       "SELECT id FROM Users WHERE role <> 'seller'",
       { type: queryInterface.sequelize.QueryTypes.SELECT }
     );
 
-    // Fetch sizes and items data
-    const sizesAndStocks = await queryInterface.sequelize.query(
-      "SELECT id, itemStock FROM Colors",
+    const stocks = await queryInterface.sequelize.query(
+      "SELECT id, itemStock FROM Colors WHERE itemStock > 0",
       { type: queryInterface.sequelize.QueryTypes.SELECT }
     );
 
@@ -21,31 +20,44 @@ module.exports = {
       { type: queryInterface.sequelize.QueryTypes.SELECT }
     );
 
-    // Create cart items
     const cartItems = [];
-    const maxUsers = users.length;
 
-    for (let i = 0; i < 20; i++) { // Create 100 cart items
-      const randomUserIndex = Math.floor(Math.random() * maxUsers);
-      const randomSizeIndex = Math.floor(Math.random() * sizesAndStocks.length);
+    for (let i = 0; i < 10; i++) { 
+      const randomUserIndex = Math.floor(Math.random() * users.length);
+      const randomSizeIndex = Math.floor(Math.random() * stocks.length);
       const randomItemIndex = Math.floor(Math.random() * itemsAndPrices.length);
       
       const user = users[randomUserIndex];
-      const sizeAndStock = sizesAndStocks[randomSizeIndex];
+      const colorAndStock = stocks[randomSizeIndex];
       const itemAndPrice = itemsAndPrices[randomItemIndex];
 
-      const maxItemQuantity = Math.min(sizeAndStock.itemStock, 10); // Assuming max quantity per cart item is 10
+      const maxItemQuantity = Math.min(Number(colorAndStock.itemStock));
       const itemQuantity = faker.random.number({ min: 1, max: maxItemQuantity });
-      const amount = itemQuantity * itemAndPrice.price;
 
-      cartItems.push({
-        UserId: user.id,
-        StockId: sizeAndStock.id,
-        itemQuantity: itemQuantity,
-        amount: amount,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      });
+      // 保證itemQuantity數量不會超過itemStock
+      const actualItemQuantity = Math.min(itemQuantity, maxItemQuantity);
+
+      if (actualItemQuantity > 0) {
+        const amount = actualItemQuantity * itemAndPrice.price;
+
+        cartItems.push({
+          UserId: user.id,
+          ColorId: colorAndStock.id, // 確保colorAndStock.id是存在的Stock的id
+          itemQuantity: actualItemQuantity,
+          amount: amount,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        });
+
+        // 更新 itemStock
+        await queryInterface.sequelize.query(
+          `UPDATE Colors SET itemStock = itemStock - :itemQuantity WHERE id = :colorId`,
+          {
+            replacements: { itemQuantity: actualItemQuantity, colorId: colorAndStock.id },
+            type: queryInterface.sequelize.QueryTypes.UPDATE
+          }
+        );
+      }
     }
 
     await queryInterface.bulkInsert('Carts', cartItems, {});
@@ -55,3 +67,8 @@ module.exports = {
     await queryInterface.bulkDelete('Carts', null, {});
   }
 };
+
+
+
+
+

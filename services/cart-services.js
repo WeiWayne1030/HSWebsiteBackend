@@ -77,19 +77,31 @@ const cartServices = {
         include: [{
           model: Item,
           attributes: ['price']
-        }]
+        },
+        {
+          model: Color,
+          attributes:['itemStock']
+        }
+      ]
       });
 
       if (!stock) {
         throw new Error("無法找到該庫存");
       }
 
-      if (stock.itemStock === 0) {
+      if (stock.Color.itemStock === 0) {
         throw new Error("此商品已沒庫存");
+      }
+
+      if (stock.Color.itemStock > itemQuantity) {
+        throw new Error("無效數量");
       }
       
       const price = stock.Item.price;
       const amount = price * itemQuantity;
+
+      stock.Color.itemStock -= itemQuantity;
+      await stock.Color.save();
 
       await Cart.create({
         itemQuantity,

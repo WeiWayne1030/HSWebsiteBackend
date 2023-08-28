@@ -41,18 +41,13 @@ const itemServices = {
           attributes: ['name'],
         },
         {
-          model: Stock,
-          include: [
+          model: Color,
+          attributes: ['name','itemStock'],
+          include:[
             {
-              model: Color,
-              attributes: ['name','itemStock'],
-              include:[
-                {
-                  model: Size,
-                  attributes: ['name'],
-                }
-              ]
-            },
+              model: Size,
+              attributes: ['name'],
+            }
           ]
         }
       ],
@@ -68,15 +63,15 @@ const itemServices = {
     }
 
     const mergedStocks = {};
-    item.Stocks.forEach(stock => {
-      const colorName = stock.Color.name;
+    item.Colors.forEach(color => {
+      const colorName = color.name;
       if (!mergedStocks[colorName]) {
         mergedStocks[colorName] = {
-          color: stock.Color.name,
+          color: color.name,
           sizes: [],
         };
       }
-      mergedStocks[colorName].sizes.push(stock.Color.Size);
+      mergedStocks[colorName].sizes.push(color.Size);
     });
 
     // Convert mergedStocks object into an array

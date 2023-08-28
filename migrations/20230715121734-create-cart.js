@@ -12,7 +12,7 @@ module.exports = {
       itemQuantity:{
         type: Sequelize.INTEGER
       },
-      StockId: {
+      ColorId: {
         type: Sequelize.INTEGER
       },
       amount: {
