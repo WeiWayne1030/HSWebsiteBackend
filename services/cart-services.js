@@ -64,7 +64,7 @@ const cartServices = {
       const existingCartItem = await Cart.findOne({
         where: {
           UserId: helpers.getUser(req).id,
-          StockId: id
+          ColorId: id
         }
       });
 
@@ -72,28 +72,21 @@ const cartServices = {
         throw new Error('你已經加入購物車了');
       }
       
-      const stock = await Stock.findOne({
+      const stock = await Color.findOne({
         where: {id: id},
+        attributes:['itemStock'],
         include: [{
           model: Item,
           attributes: ['price']
-        },
-        {
-          model: Color,
-          attributes:['itemStock']
         }
       ]
       });
 
-      if (!stock) {
-        throw new Error("無法找到該庫存");
-      }
-
-      if (stock.Color.itemStock === 0) {
+      if (stock.itemStock === 0) {
         throw new Error("此商品已沒庫存");
       }
 
-      if (stock.Color.itemStock > itemQuantity) {
+      if (stock.itemStock < itemQuantity) {
         throw new Error("無效數量");
       }
       
@@ -106,7 +99,7 @@ const cartServices = {
       await Cart.create({
         itemQuantity,
         UserId: helpers.getUser(req).id,
-        StockId: id,
+        ColorId: id,
         amount
       });
 
