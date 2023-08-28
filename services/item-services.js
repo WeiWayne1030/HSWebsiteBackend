@@ -42,7 +42,7 @@ const itemServices = {
         },
         {
           model: Color,
-          attributes: ['name','itemStock'],
+          attributes: ['id','name','itemStock'],
           include:[
             {
               model: Size,
