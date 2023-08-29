@@ -6,9 +6,6 @@ const cartServices = {
   getCarts: async(req, cb) => {
     try {
       const DEFAULT_LIMIT = 9
-      const categoryId = Number(req.query.categoryId) || ''
-      const sizeId = Number(req.query.sizeId) || ''
-      const colorId = Number(req.query.colorId) || ''
       const page = Number(req.query.page) || 1
       const limit = Number(req.query.limit) || DEFAULT_LIMIT
       const offset = getOffset(limit, page)
@@ -17,25 +14,19 @@ const cartServices = {
         where: { UserId: userId },
         include: [
           {
-            model: Stock,
+            model: Color,
             include: [
               {
                 model: Item,
                 include: [
                   {
-                    model: Category,
-                    where: { ...categoryId ? { categoryId } : {} }
+                    model: Category
                   }
                 ]
               },
               {
-                model: Color,
-                where: { ...colorId ? { colorId } : {} }
+                model: Size
               },
-              {
-                model: Size,
-                where: { ...sizeId ? { sizeId } : {} }
-              }
             ],
           },
         ],
@@ -43,14 +34,11 @@ const cartServices = {
         limit,
         offset,
       });
-      const categories = await Category.findAll({ raw: true });
-      const sizes = await Size.findAll({ raw: true });
-      const colors = await Color.findAll({ raw: true });
       if (!carts === 0) {
         throw new Error('目前沒有任何物品在購物車裡！');
       }
       const pagination = getPagination(limit, page, carts.count);
-      cb(null, carts, categories, sizes, colors, categoryId, sizeId, colorId, pagination);
+      cb(null, carts, pagination);
     } catch (err) {
       cb(err);
     }
@@ -69,7 +57,7 @@ const cartServices = {
       });
 
       if (existingCartItem) {
-        throw new Error('你已經加入購物車了');
+        throw new Error('你已經加入購物車了，可在購物車調整數量');
       }
       
       const stock = await Color.findOne({
