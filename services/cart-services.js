@@ -74,7 +74,6 @@ const cartServices = {
       
       const stock = await Color.findOne({
         where: {id: id},
-        attributes:['itemStock'],
         include: [{
           model: Item,
           attributes: ['price']
@@ -93,8 +92,8 @@ const cartServices = {
       const price = stock.Item.price;
       const amount = price * itemQuantity;
 
-      stock.Color.itemStock -= itemQuantity;
-      await stock.Color.save();
+      stock.itemStock -= itemQuantity;
+      await stock.save()
 
       await Cart.create({
         itemQuantity,
