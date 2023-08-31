@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 const sequelize = require('sequelize')
 const helpers = require('../_helpers')
 const { Op } = require('sequelize')
-const { User, Order, Method, Cart, Stock, Item } = require('../models')
+const { User, Order, Method, Cart, Item } = require('../models')
 const { localFileHandler } = require('../helpers/imgurFileHandler')
 
 const userServices = {
@@ -301,21 +301,36 @@ const userServices = {
             throw new Error('無法取得使用者資訊或使用者ID')
         }
         const userId = user.id
-        const orders = await Order.findAll({
-            where: { 
-                UserId: userId,
-             },
-            include: {
-                model: Method
-            }
-        });
+        const methodId = Number(req.query.MethodId) || ""
+        const orderNumber = Number(req.query.orderNumber) || ""
+        const state = Number(req.query.state) || ""
+        const [ orders, methods ] = await Promise.all([
+                Order.findAll({
+                where: { 
+                    UserId: userId,
+                },
+                include: {
+                    model: Method,
+                    where: methodId !== "" ? { methodId } : {},
+                    nest: true,
+                    raw: true,
+                }
+            }),
+            Method.findAll({ raw: true }),
+        ])
         if (!orders) {
             throw new Error('無法取得訂單資訊');
         }
         if (orders.length === 0) {
             throw new Error('無訂單資訊');
         }   
-        cb(null, orders);
+        cb(null, {
+            orders,
+            methods,
+            methodId,
+            orderNumber,
+            state
+        });
     } catch (err) {
         cb(err);
     }
