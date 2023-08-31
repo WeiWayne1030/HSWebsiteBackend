@@ -294,49 +294,32 @@ const userServices = {
 //             }
 //         )
 //     },
-//     getOrders: async (req, cb) => {
-//     try {
-//         const user = helpers.getUser(req);
-//         if (!user || !user.id) {
-//             throw new Error('無法取得使用者資訊或使用者ID');
-//         }
-//         const userId = user.id;
-//         const orders = await Order.findAll({
-//             where: { UserId: userId,
-//              },
-//             include: [
-//                 {
-//                     model: Cart,
-//                     include: [
-//                         {
-//                             model: Stock,
-//                             include: [
-//                                 {
-//                                     model: Item
-//                                 }]
-//                     }]    
-//                 },
-//                 {
-//                     model: OrderInfo,
-//                     include: [
-//                         {
-//                             model: Method,
-//                         },
-//                     ],
-//                 },
-//             ],
-//         });
-//         if (!orders) {
-//             throw new Error('無法取得訂單資訊');
-//         }
-//         if (orders.length === 0) {
-//             throw new Error('無訂單資訊');
-//         }   
-//         cb(null, orders);
-//     } catch (err) {
-//         cb(err);
-//     }
-// },
+    getOrders: async (req, cb) => {
+    try {
+        const user = helpers.getUser(req)
+        if (!user || !user.id) {
+            throw new Error('無法取得使用者資訊或使用者ID')
+        }
+        const userId = user.id
+        const orders = await Order.findAll({
+            where: { 
+                UserId: userId,
+             },
+            include: {
+                model: Method
+            }
+        });
+        if (!orders) {
+            throw new Error('無法取得訂單資訊');
+        }
+        if (orders.length === 0) {
+            throw new Error('無訂單資訊');
+        }   
+        cb(null, orders);
+    } catch (err) {
+        cb(err);
+    }
+},
 
 //     getOrder: async (req, cb) => {
 //     try {

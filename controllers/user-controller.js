@@ -23,9 +23,9 @@ const userController = {
 //     putOrderInfo: (req, res, next) => {
 //         userServices.putOrderInfo(req, (err, data) => err ? next(err) : res.status(200).json(data))
 //   },
-//   getOrders: (req, res, next) => {
-//         userServices.getOrders(req, (err, data) => err ? next(err) : res.status(200).json(data))
-//   },
+  getOrders: (req, res, next) => {
+        userServices.getOrders(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
 //   getOrder: (req, res, next) => {
 //         userServices.getOrder(req, (err, data) => err ? next(err) : res.status(200).json(data))
 //   }

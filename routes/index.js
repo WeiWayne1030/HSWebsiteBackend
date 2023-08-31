@@ -30,8 +30,8 @@ router.post('/api/orders', authenticated, authenticatedUser, userController.buil
 // router.put('/api/orderInfos/:InfoId', authenticated, authenticatedUser, userController.putOrderInfo)
 // //取得該使用者單筆訂單資料
 // router.get('/api/orders/:id', authenticated, authenticatedUser, userController.getOrder)
-// //取得該使用者所有訂單資料
-// router.get('/api/orders', authenticated, authenticatedUser, userController.getOrders)
+//取得該使用者所有訂單資料
+router.get('/api/orders', authenticated, authenticatedUser, userController.getOrders)
 
 //admin
 //查詢所有商品（上架下架）
