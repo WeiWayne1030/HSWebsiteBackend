@@ -106,11 +106,25 @@ const cartServices = {
       const id = req.params.id
       const cart = await Cart.findByPk(id)
       if (!cart) throw new Error('購物車裡沒有該品項!')
+
+      const colorId = cart.ColorId
+      
+
+      const stock = await Color.findOne({
+        where: {id: colorId},
+      })
+
+      const newStock = stock.itemStock += cart.itemQuantity
+      await stock.update({
+      itemStock: newStock,
+     });
+
       await Cart.destroy({
         where: {
           id: id
         }
       })
+
       cb(null, {
         status: '已將該品項在購物車中移除！'
       })
@@ -140,7 +154,6 @@ const cartServices = {
           cb(err)
       }
   },
-  
 }
 
 
