@@ -1,5 +1,5 @@
 const { Item, Stock, Color, Size, Cart, Category } = require('../models')
-const helpers = require('../_helpers');
+const helpers = require('../_helpers')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 
 const cartServices = {
@@ -11,7 +11,10 @@ const cartServices = {
       const offset = getOffset(limit, page)
       const userId = helpers.getUser(req).id
       const carts = await Cart.findAndCountAll({
-        where: { UserId: userId },
+        where: [
+          { UserId: userId },
+          {state: '未生成訂單'}
+        ],
         include: [
           {
             model: Color,
@@ -33,31 +36,31 @@ const cartServices = {
         order: [['createdAt', 'DESC']],
         limit,
         offset,
-      });
+      })
       if (!carts === 0) {
-        throw new Error('目前沒有任何物品在購物車裡！');
+        throw new Error('目前沒有任何物品在購物車裡！')
       }
-      const pagination = getPagination(limit, page, carts.count);
-      cb(null, carts, pagination);
+      const pagination = getPagination(limit, page, carts.count)
+      cb(null, carts, pagination)
     } catch (err) {
-      cb(err);
+      cb(err)
     }
   },
   addToCart: async (req, cb) => {
     try {
-      const id = Number(req.body.ColorId);
+      const id = Number(req.body.ColorId)
       
-      const itemQuantity = Number(req.body.itemQuantity); 
+      const itemQuantity = Number(req.body.itemQuantity)
       
       const existingCartItem = await Cart.findOne({
         where: {
           UserId: helpers.getUser(req).id,
           ColorId: id
         }
-      });
+      })
 
       if (existingCartItem) {
-        throw new Error('你已經加入購物車了，可在購物車調整數量');
+        throw new Error('你已經加入購物車')
       }
       
       const stock = await Color.findOne({
@@ -67,73 +70,74 @@ const cartServices = {
           attributes: ['price']
         }
       ]
-      });
+      })
 
       if (stock.itemStock === 0) {
-        throw new Error("此商品已沒庫存");
+        throw new Error("此商品已沒庫存")
       }
 
       if (stock.itemStock < itemQuantity) {
-        throw new Error("無效數量");
+        throw new Error("無效數量")
       }
       
-      const price = stock.Item.price;
-      const amount = price * itemQuantity;
+      const price = stock.Item.price
+      const amount = price * itemQuantity
 
-      stock.itemStock -= itemQuantity;
+      stock.itemStock -= itemQuantity
       await stock.save()
 
       await Cart.create({
         itemQuantity,
+        state:'未生成訂單',
         UserId: helpers.getUser(req).id,
         ColorId: id,
         amount
-      });
+      })
 
       cb(null, {
         status: '已添加購物車！'
-      });
+      })
     } catch (err) {
-      cb(err);
+      cb(err)
     }
   },
   delCart: async (req, cb) => {
     try {
-      const id = req.params.id;
-      const cart = await Cart.findByPk(id);
-      if (!cart) throw new Error('購物車裡沒有該品項!');
+      const id = req.params.id
+      const cart = await Cart.findByPk(id)
+      if (!cart) throw new Error('購物車裡沒有該品項!')
       await Cart.destroy({
         where: {
           id: id
         }
-      });
+      })
       cb(null, {
         status: '已將該品項在購物車中移除！'
-      });
+      })
     } catch (err) {
-      cb(err);
+      cb(err)
     }
   },
   delCarts: async (req, cb) => {
       try {
-          const userId = helpers.getUser(req).id;
+          const userId = helpers.getUser(req).id
           const carts = await Cart.findAll({
               where: { UserId: userId },
-          });
+          })
 
           if (carts.length === 0) {
-              throw new Error('目前沒有任何訂單！');
+              throw new Error('目前沒有任何訂單！')
           }
 
           await Cart.destroy({
               where: { UserId: userId },
-          });
+          })
 
           cb(null, {
         status: '已刪除全部品項！'
       })
       } catch (err) {
-          cb(err);
+          cb(err)
       }
   },
   

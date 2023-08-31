@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 const sequelize = require('sequelize')
 const helpers = require('../_helpers')
 const { Op } = require('sequelize')
-const { User, Order, Method,Cart, OrderInfo,Stock, Item } = require('../models')
+const { User, Order, Method, Cart, Stock, Item } = require('../models')
 const { localFileHandler } = require('../helpers/imgurFileHandler')
 
 const userServices = {
@@ -147,213 +147,240 @@ const userServices = {
                 cb(err)
             })
     },
-    orderInfo: async (req, cb) => {
-        try {
-            const { id } = req.params;
-            const userId = helpers.getUser(req).id;
-            const { shipName, address, shipTel, MethodId } = req.body;
+    // orderInfo: async (req, cb) => {
+    //     try {
+    //         const { id } = req.params;
+    //         const userId = helpers.getUser(req).id;
+    //         const { shipName, address, shipTel, MethodId } = req.body;
 
 
-            const order = await Order.findOne({
-                where: { OrderInfoId: id },
-            });
+    //         const order = await Order.findOne({
+    //             where: { OrderInfoId: id },
+    //         });
 
-            const method = await Method.findByPk(MethodId);
-            if (!method) {
-                throw new Error('運送方式不存在');
-            }
-            if (!order) {
-                throw new Error('訂單不存在');
-            }
-            if (order.UserId !== userId) {
-                throw new Error('只能編輯自己的訂單');
-            }
-            const orderInfo = await OrderInfo.create({
-                orderNumber: order.orderNumber,
-                UserId: userId,
-                shipName,
-                address,
-                shipTel,
-                MethodId,
-                total: order.total,
-            });
-            cb(null, orderInfo);
-        } catch (err) {
-            cb(err);
-        }
-    },
+    //         const method = await Method.findByPk(MethodId);
+    //         if (!method) {
+    //             throw new Error('運送方式不存在');
+    //         }
+    //         if (!order) {
+    //             throw new Error('訂單不存在');
+    //         }
+    //         if (order.UserId !== userId) {
+    //             throw new Error('只能編輯自己的訂單');
+    //         }
+    //         const orderInfo = await OrderInfo.create({
+    //             orderNumber: order.orderNumber,
+    //             UserId: userId,
+    //             shipName,
+    //             address,
+    //             shipTel,
+    //             MethodId,
+    //             total: order.total,
+    //         });
+    //         cb(null, orderInfo);
+    //     } catch (err) {
+    //         cb(err);
+    //     }
+    // },
     buildOrder: async (req, cb) => {
         try {
-            const { id } = req.params;
-            const userId = helpers.getUser(req).id;
-            const carts = await Cart.findAll({
-            where: {
-                id,
-                UserId: userId,
-            },
-            include: [
-                {
-                model: Stock,
-                include: [
-                    {
-                    model: Item,
-                    },
-                ],
-                },
-            ],
+            const userId = helpers.getUser(req).id
+            const { shipName, address, shipTel, MethodId } = req.body
+
+            // 查詢未建立訂單的購物車項
+            const carts = await Cart.findAndCountAll({
+                where: {
+                    state: '未生成訂單',
+                    UserId: userId,
+                }
             });
-            if (carts.length === 0) {
-            return cb(new Error("購物車不存在."));
+
+            if (carts.count === 0) {
+                return cb(new Error("購物車不存在."))
             }
+
+            // 生成訂單號
+            function generateOrderNumber(userId, orderCount) {
+                const orderNumberInt = 100001 + orderCount
+                return `OR${orderNumberInt.toString().padStart(6, '0')}`
+            }
+
+            // 查詢已有訂單數量以及訂單號
+            const orderCount = await Order.count()
+
+            const orderNumber = generateOrderNumber(userId, orderCount)
+
+            // 計算訂單總價
+            const total = carts.rows.reduce((total, cart) => {
+                return total += cart.amount
+            }, 0);
 
             // 建立訂單
             const order = await Order.create({
+                orderNumber: orderNumber,
+                shipName: shipName,
+                address: address,
+                shipTel: shipTel,
+                MethodId: MethodId,
                 UserId: userId,
-                total: carts.reduce((a, b) => a + b.Stock.Item.price * b.itemQuantity, 0),
                 state: false,
-                itemQuantity: carts.reduce((a, b) => a + b.dataValues.amount, 0),
-                CartId: id,
-            });
-            cb(null, order);
+                itemCount: carts.count,
+                total: total,
+            })
+
+            // 更新購物車狀態以及訂單號
+            await Cart.update(
+                {
+                    state: '已生成訂單',
+                    orderNumber: orderNumber,
+                },
+                {
+                    where: {
+                        id: carts.rows.map(cart => cart.id),
+                    },
+                }
+            )
+
+            cb(null, order)
         } catch (err) {
-            cb(err);
+            cb(err)
         }
     },
-    putOrderInfo: async (req, cb) => {
-        const { id } = req.params
-        const { shipName, address, shipTel, MethodId } = req.body
-        const { file } = req
-        if (!shipName || !address || !shipTel || !MethodId) throw new Error('所有欄位皆為必填！')
-        if (shipName.length >= 50) throw new Error('收件人姓名不可超過50字！')
-        if (address.length >= 160) throw new Error('收件地址不可超過160字！')
-        if (shipTel.length >= 20) throw new Error('收件人電話不可超過20字！')
-        return Promise.all([
-            OrderInfo.findAll({
-                raw: true,
-                where: { id: { [Op.ne]: id } } // 找出除了使用者本人以外的所有使用者
-            }),
-            OrderInfo.findByPk(id),
-            localFileHandler(file)
-        ])
-            .then(([allOrderInfos, orderInfo, filePath]) => {
-                if (allOrderInfos.length > 0) {
-                    const existingShipName = allOrderInfos.find(orderInfo => orderInfo.shipName === shipName)
-                    const existingAddress = allOrderInfos.find(orderInfo => orderInfo.address === address)
-                    const existingShipTel = allOrderInfos.find(orderInfo => orderInfo.shipTel === shipTel)
-                    if (existingShipName) {
-                        throw new Error('收件人姓名已存在！')
-                    } else if (existingAddress) {
-                        throw new Error('收件地址已存在！')
-                    } else if (existingShipTel) {
-                        throw new Error('收件人電話已存在！')
-                    }
-                }
-                if (!orderInfo) throw new Error("訂單不存在！")
-                if (orderInfo.id !== Number(id)) throw new Error('只能編輯自己的訂單！')
-                orderInfo.update({
-                    shipName,
-                    address,
-                    shipTel,
-                    MethodId,
-                    avatar: filePath || orderInfo.avatar,
-                })
-                    .then(updateOrderInfo => {
-                        const orderInfoData = updateOrderInfo.toJSON()
-                        cb(null, orderInfoData)
-                    })
-                    .catch(err => {
-                        cb(err)
-                    })
-            }
-        )
-    },
-    getOrders: async (req, cb) => {
-    try {
-        const user = helpers.getUser(req);
-        if (!user || !user.id) {
-            throw new Error('無法取得使用者資訊或使用者ID');
-        }
-        const userId = user.id;
-        const orders = await Order.findAll({
-            where: { UserId: userId,
-             },
-            include: [
-                {
-                    model: Cart,
-                    include: [
-                        {
-                            model: Stock,
-                            include: [
-                                {
-                                    model: Item
-                                }]
-                    }]    
-                },
-                {
-                    model: OrderInfo,
-                    include: [
-                        {
-                            model: Method,
-                        },
-                    ],
-                },
-            ],
-        });
-        if (!orders) {
-            throw new Error('無法取得訂單資訊');
-        }
-        if (orders.length === 0) {
-            throw new Error('無訂單資訊');
-        }   
-        cb(null, orders);
-    } catch (err) {
-        cb(err);
-    }
-},
+//     putOrderInfo: async (req, cb) => {
+//         const { id } = req.params
+//         const { shipName, address, shipTel, MethodId } = req.body
+//         const { file } = req
+//         if (!shipName || !address || !shipTel || !MethodId) throw new Error('所有欄位皆為必填！')
+//         if (shipName.length >= 50) throw new Error('收件人姓名不可超過50字！')
+//         if (address.length >= 160) throw new Error('收件地址不可超過160字！')
+//         if (shipTel.length >= 20) throw new Error('收件人電話不可超過20字！')
+//         return Promise.all([
+//             OrderInfo.findAll({
+//                 raw: true,
+//                 where: { id: { [Op.ne]: id } } // 找出除了使用者本人以外的所有使用者
+//             }),
+//             OrderInfo.findByPk(id),
+//             localFileHandler(file)
+//         ])
+//             .then(([allOrderInfos, orderInfo, filePath]) => {
+//                 if (allOrderInfos.length > 0) {
+//                     const existingShipName = allOrderInfos.find(orderInfo => orderInfo.shipName === shipName)
+//                     const existingAddress = allOrderInfos.find(orderInfo => orderInfo.address === address)
+//                     const existingShipTel = allOrderInfos.find(orderInfo => orderInfo.shipTel === shipTel)
+//                     if (existingShipName) {
+//                         throw new Error('收件人姓名已存在！')
+//                     } else if (existingAddress) {
+//                         throw new Error('收件地址已存在！')
+//                     } else if (existingShipTel) {
+//                         throw new Error('收件人電話已存在！')
+//                     }
+//                 }
+//                 if (!orderInfo) throw new Error("訂單不存在！")
+//                 if (orderInfo.id !== Number(id)) throw new Error('只能編輯自己的訂單！')
+//                 orderInfo.update({
+//                     shipName,
+//                     address,
+//                     shipTel,
+//                     MethodId,
+//                     avatar: filePath || orderInfo.avatar,
+//                 })
+//                     .then(updateOrderInfo => {
+//                         const orderInfoData = updateOrderInfo.toJSON()
+//                         cb(null, orderInfoData)
+//                     })
+//                     .catch(err => {
+//                         cb(err)
+//                     })
+//             }
+//         )
+//     },
+//     getOrders: async (req, cb) => {
+//     try {
+//         const user = helpers.getUser(req);
+//         if (!user || !user.id) {
+//             throw new Error('無法取得使用者資訊或使用者ID');
+//         }
+//         const userId = user.id;
+//         const orders = await Order.findAll({
+//             where: { UserId: userId,
+//              },
+//             include: [
+//                 {
+//                     model: Cart,
+//                     include: [
+//                         {
+//                             model: Stock,
+//                             include: [
+//                                 {
+//                                     model: Item
+//                                 }]
+//                     }]    
+//                 },
+//                 {
+//                     model: OrderInfo,
+//                     include: [
+//                         {
+//                             model: Method,
+//                         },
+//                     ],
+//                 },
+//             ],
+//         });
+//         if (!orders) {
+//             throw new Error('無法取得訂單資訊');
+//         }
+//         if (orders.length === 0) {
+//             throw new Error('無訂單資訊');
+//         }   
+//         cb(null, orders);
+//     } catch (err) {
+//         cb(err);
+//     }
+// },
 
-    getOrder: async (req, cb) => {
-    try {
-        const { orderId } = req.params;
-        const userId = helpers.getUser(req).id;
+//     getOrder: async (req, cb) => {
+//     try {
+//         const { orderId } = req.params;
+//         const userId = helpers.getUser(req).id;
         
-        const order = await Order.findOne({
-            where: { id: orderId, UserId: userId },
-            include: [
-                {
-                    model: Cart,
-                    include: [
-                        {
-                            model: Stock,
-                        }
-                    ]
-                },
-                {
-                    model: OrderInfo,
-                    include: [
-                        {
-                            model: Method,
-                        }
-                    ]
-                }
-            ],
-        });
+//         const order = await Order.findOne({
+//             where: { id: orderId, UserId: userId },
+//             include: [
+//                 {
+//                     model: Cart,
+//                     include: [
+//                         {
+//                             model: Stock,
+//                         }
+//                     ]
+//                 },
+//                 {
+//                     model: OrderInfo,
+//                     include: [
+//                         {
+//                             model: Method,
+//                         }
+//                     ]
+//                 }
+//             ],
+//         });
 
-        if (!order) {
-            throw new Error('無法取得訂單資訊');
-        }
+//         if (!order) {
+//             throw new Error('無法取得訂單資訊');
+//         }
 
-        if (order.Carts.length === 0) {
-            throw new Error('無訂單資訊');
-        }
+//         if (order.Carts.length === 0) {
+//             throw new Error('無訂單資訊');
+//         }
 
-        if (order.UserId !== userId) {
-            throw new Error('只能編輯自己的訂單');
-        }
+//         if (order.UserId !== userId) {
+//             throw new Error('只能編輯自己的訂單');
+//         }
 
-        cb(null, order, order.Carts);
-    } catch (err) {
-        cb(err);
-    }
-}
+//         cb(null, order, order.Carts);
+//     } catch (err) {
+//         cb(err);
+//     }
+// }
 }
 module.exports = userServices

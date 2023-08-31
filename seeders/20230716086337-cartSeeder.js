@@ -21,6 +21,7 @@ module.exports = {
     );
 
     const cartItems = [];
+    const addedItems = new Set(); // Keep track of added items (UserId + ColorId)
 
     for (let i = 0; i < 10; i++) { 
       const randomUserIndex = Math.floor(Math.random() * users.length);
@@ -34,16 +35,25 @@ module.exports = {
       const maxItemQuantity = Math.min(Number(colorAndStock.itemStock));
       const itemQuantity = faker.random.number({ min: 1, max: maxItemQuantity });
 
-      // 保證itemQuantity數量不會超過itemStock
-      const actualItemQuantity = Math.min(itemQuantity, maxItemQuantity);
+      // 修正 generateOrderNumber 函式
+      function generateOrderNumber(userId) {
+        const orderNumberInt = 100001 + users.indexOf(user);
+        return `OR${orderNumberInt.toString().padStart(6, '0')}`;
+      }
+      const orderNumber = generateOrderNumber(user.id);
 
-      if (actualItemQuantity > 0) {
-        const amount = actualItemQuantity * itemAndPrice.price;
+      const cartItemId = `${user.id}-${colorAndStock.id}`;
+      if (!addedItems.has(cartItemId) && itemQuantity > 0) {
+        addedItems.add(cartItemId);
+
+        const amount = itemQuantity * itemAndPrice.price;
 
         cartItems.push({
+          orderNumber: orderNumber,
           UserId: user.id,
-          ColorId: colorAndStock.id, // 確保colorAndStock.id是存在的Stock的id
-          itemQuantity: actualItemQuantity,
+          state: '已生成訂單',
+          ColorId: colorAndStock.id,
+          itemQuantity: itemQuantity,
           amount: amount,
           createdAt: new Date(),
           updatedAt: new Date()
@@ -53,7 +63,7 @@ module.exports = {
         await queryInterface.sequelize.query(
           `UPDATE Colors SET itemStock = itemStock - :itemQuantity WHERE id = :colorId`,
           {
-            replacements: { itemQuantity: actualItemQuantity, colorId: colorAndStock.id },
+            replacements: { itemQuantity: itemQuantity, colorId: colorAndStock.id },
             type: queryInterface.sequelize.QueryTypes.UPDATE
           }
         );

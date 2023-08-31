@@ -9,33 +9,38 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      shipName: {
+        type: Sequelize.STRING
+      },
       orderNumber: {
         type: Sequelize.STRING
       },
       state:{
         type: Sequelize.BOOLEAN
       },
-      CartId: {
-        type: Sequelize.INTEGER
-      },
       UserId: {
         type: Sequelize.INTEGER
       },
-      OrderInfoId: {
-        type: Sequelize.INTEGER
+      shipTel:{
+        type: Sequelize.STRING
       },
-      itemQuantity: {
+      itemCount: {
         type: Sequelize.INTEGER
       },
       total: {
         type: Sequelize.INTEGER
+      },
+      MethodId: {
+        type: Sequelize.INTEGER
+      },
+      address:{
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
       },
       updatedAt: {
-        allowNull: false,
         type: Sequelize.DATE
       }
     })

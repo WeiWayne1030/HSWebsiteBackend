@@ -12,7 +12,7 @@ const { authenticatedAdmin, authenticatedUser, authenticated } = require('../mid
 // signup & signin
 //商家登入
 router.post('/api/admin/signin', adminController.signIn)
-//使用者登入
+//使用者登入(finish)
 router.post('/api/users/signin', userController.signIn)
 //使用者註冊
 router.post('/api/users', userController.signUp)
@@ -24,21 +24,19 @@ router.get('/api/users/:id/profile', authenticated, authenticatedUser, userContr
 router.put('/api/users/:id/profile',upload.single('image'), authenticated, authenticatedUser, userController.putUser)
 
 //order
-//填寫訂單資料
-router.post('/api/order/:id/orderInfo', authenticated, authenticatedUser, userController.orderInfo)
-//建立訂單（未完成））
-router.post('/api/cart/:id/orders', authenticated, authenticatedUser, userController.buildOrder)
-//修改訂單資料（付款資料部分）
-router.put('/api/orderInfos/:InfoId', authenticated, authenticatedUser, userController.putOrderInfo)
-//取得該使用者單筆訂單資料
-router.get('/api/orders/:id', authenticated, authenticatedUser, userController.getOrder)
-//取得該使用者所有訂單資料
-router.get('/api/orders', authenticated, authenticatedUser, userController.getOrders)
+//建立訂單
+router.post('/api/orders', authenticated, authenticatedUser, userController.buildOrder)
+// //修改訂單資料（付款資料部分）
+// router.put('/api/orderInfos/:InfoId', authenticated, authenticatedUser, userController.putOrderInfo)
+// //取得該使用者單筆訂單資料
+// router.get('/api/orders/:id', authenticated, authenticatedUser, userController.getOrder)
+// //取得該使用者所有訂單資料
+// router.get('/api/orders', authenticated, authenticatedUser, userController.getOrders)
 
 //admin
 //查詢所有商品（上架下架）
 router.get('/api/admin/items', authenticated, authenticatedAdmin, adminController.getItems)
-//下架商品（未完成）
+//下架商品
 router.post('/api/admin/stock/:id/remove', authenticated, authenticatedAdmin, adminController.removeItem)
 //上架商品
 router.post('/api/admin/item',upload.single('image'), authenticated, authenticatedAdmin, adminController.postItem)
@@ -53,10 +51,10 @@ router.put('/api/admin/stock/:id',upload.single('image'), authenticated, authent
 
 
 //admin order
-//取得所有訂單資料
-router.get('/api/admin/orderInfos', authenticated, authenticatedAdmin, adminController.slGetOrderInfos)
-//取得單筆訂單資料
-router.get('/api/admin/orderInfos/:id', authenticated, authenticatedAdmin, adminController.slGetOrderInfo)
+// //取得所有訂單資料
+// router.get('/api/admin/orderInfos', authenticated, authenticatedAdmin, adminController.slGetOrderInfos)
+// //取得單筆訂單資料
+// router.get('/api/admin/orderInfos/:id', authenticated, authenticatedAdmin, adminController.slGetOrderInfo)
 
 
 //admin etc
