@@ -5,6 +5,7 @@ const helpers = require('../_helpers')
 const { Op } = require('sequelize')
 const { User, Order, Method, Cart, Item } = require('../models')
 const { localFileHandler } = require('../helpers/imgurFileHandler')
+const { switchTime } = require('../helpers/dayjs-helpers')
 
 const userServices = {
     signIn: async(req, cb) => {
@@ -328,14 +329,18 @@ const userServices = {
         }
         if (orders.length === 0) {
             throw new Error('無訂單資訊');
-        }   
-        cb(null, {
-            orders,
-            methods,
-            methodId,
-            orderNumber,
-            state
-        });
+        }
+        ordersInfo = await orders.map(order => {
+                return {...order.dataValues,
+                    methods,
+                    methodId,
+                    orderNumber,
+                    state,
+                    createdAt: switchTime(order.createdAt),
+                    updatedAt: switchTime(order.updatedAt)
+                }
+            })   
+        cb(null, ordersInfo);
     } catch (err) {
         cb(err);
     }

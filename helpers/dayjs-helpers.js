@@ -4,5 +4,5 @@ dayjs.extend(relativeTime)
 
 module.exports = {
   relativeTimeFromNow: a => dayjs().to(a),
-  switchTime: a => dayjs(a).format('A hh:mm ． YYYY年MM月DD日')
+  switchTime: a => dayjs(a).format(`YYYY/MM/DD`)
 }
