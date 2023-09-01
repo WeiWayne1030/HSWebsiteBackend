@@ -332,10 +332,6 @@ const userServices = {
         }
         ordersInfo = await orders.map(order => {
                 return {...order.dataValues,
-                    methods,
-                    methodId,
-                    orderNumber,
-                    state,
                     createdAt: switchTime(order.createdAt),
                     updatedAt: switchTime(order.updatedAt)
                 }
