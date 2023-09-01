@@ -188,12 +188,17 @@ const userServices = {
             const { shipName, address, shipTel, MethodId } = req.body
 
             // 查詢未建立訂單的購物車項
-            const carts = await Cart.findAndCountAll({
+   
+
+            const [ carts, methods ] = await Promise.all([
+                await Cart.findAndCountAll({
                 where: {
                     state: '未生成訂單',
                     UserId: userId,
                 }
-            });
+                }),
+                Method.findAll({ raw: true })
+            ])
 
             if (carts.count === 0) {
                 return cb(new Error("購物車不存在."))
@@ -241,7 +246,7 @@ const userServices = {
                 }
             )
 
-            cb(null, order)
+            cb(null, {order, methods})
         } catch (err) {
             cb(err)
         }
