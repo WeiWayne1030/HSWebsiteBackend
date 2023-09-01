@@ -55,7 +55,8 @@ const cartServices = {
       const existingCartItem = await Cart.findOne({
         where: {
           UserId: helpers.getUser(req).id,
-          ColorId: id
+          ColorId: id,
+          state: "未生成訂單"
         }
       })
 
