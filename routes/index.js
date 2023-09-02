@@ -9,10 +9,13 @@ const adminController = require('../controllers/admin-controller')
 
 const { authenticatedAdmin, authenticatedUser, authenticated } = require('../middleware/auth')
 
+
+
+
 // signup & signin
-//商家登入
+//商家登入 ok
 router.post('/api/admin/signin', adminController.signIn)
-//使用者登入(finish)
+//使用者登入 ok
 router.post('/api/users/signin', userController.signIn)
 //使用者註冊
 router.post('/api/users', userController.signUp)
@@ -22,6 +25,10 @@ router.post('/api/users', userController.signUp)
 router.get('/api/users/:id/profile', authenticated, authenticatedUser, userController.getUser)
 //修改使用者資料
 router.put('/api/users/:id/profile',upload.single('image'), authenticated, authenticatedUser, userController.putUser)
+
+
+
+
 
 //order
 //建立訂單
@@ -33,21 +40,27 @@ router.post('/api/orders', authenticated, authenticatedUser, userController.buil
 //取得該使用者所有訂單資料
 router.get('/api/orders', authenticated, authenticatedUser, userController.getOrders)
 
-//admin
-//查詢所有商品（上架下架）
-router.get('/api/admin/items', authenticated, authenticatedAdmin, adminController.getItems)
+//admin（庫存管理）
 //下架商品
-router.post('/api/admin/stock/:id/remove', authenticated, authenticatedAdmin, adminController.removeItem)
-//上架商品
-router.post('/api/admin/item',upload.single('image'), authenticated, authenticatedAdmin, adminController.postItem)
-//新增商品庫存
-router.post('/api/admin/items/:stockId', authenticated, authenticatedAdmin, adminController.postStock)
-//刪除商品庫存
-router.delete('/api/admin/stock/:id', authenticated, authenticatedAdmin, adminController.delItem)
-//取得所有商品庫存
-router.get('/api/admin/getAdminStock', authenticated, authenticatedAdmin, adminController.getAdminItems)
-//修改商品庫存
-router.put('/api/admin/stock/:id',upload.single('image'), authenticated, authenticatedAdmin, adminController.putStock)
+router.post('/api/admin/items/:id/remove', authenticated, authenticatedAdmin, adminController.removeItem);
+//重新上架商品
+router.post('/api/admin/items/:id/relist', authenticated, authenticatedAdmin, adminController.relistItem);
+//新增商品
+router.post('/api/admin/items',upload.single('image'), authenticated, authenticatedAdmin, adminController.postItem)
+
+// //刪除商品庫存(為確保已生成訂單的紀錄，所以暫不使用此功能)
+// router.delete('/api/admin/items/:id', authenticated, authenticatedAdmin, adminController.delItem)
+
+
+
+// //新增商品庫存
+// router.post('/api/admin/items/:stockId', authenticated, authenticatedAdmin, adminController.postStock)
+// //修改商品庫存
+// router.put('/api/admin/stock/:id',upload.single('image'), authenticated, authenticatedAdmin, adminController.putStock)
+//檢視所有商品（上架下架）
+router.get('/api/admin/items', authenticated, authenticatedAdmin, adminController.getItems)
+
+
 
 
 //admin order
@@ -57,31 +70,31 @@ router.put('/api/admin/stock/:id',upload.single('image'), authenticated, authent
 // router.get('/api/admin/orderInfos/:id', authenticated, authenticatedAdmin, adminController.slGetOrderInfo)
 
 
-//admin etc
-//新增商品分類
-router.post('/api/admin/category', authenticated, authenticatedAdmin, adminController.postCategory)
-//新增商品顏色
-router.post('/api/admin/color', authenticated, authenticatedAdmin, adminController.postColor)
-//新增商品尺寸
-router.post('/api/admin/size', authenticated, authenticatedAdmin, adminController.postSize)
-//新增運送方式
-router.post('/api/admin/method', authenticated, authenticatedAdmin, adminController.postMethod)
+// //admin etc
+// //新增商品分類
+// router.post('/api/admin/category', authenticated, authenticatedAdmin, adminController.postCategory)
+// //新增商品顏色
+// router.post('/api/admin/color', authenticated, authenticatedAdmin, adminController.postColor)
+// //新增商品尺寸
+// router.post('/api/admin/size', authenticated, authenticatedAdmin, adminController.postSize)
+// //新增運送方式
+// router.post('/api/admin/method', authenticated, authenticatedAdmin, adminController.postMethod)
 
 //item
-//取得所有商品
+//取得所有商品 ok
 router.get('/api/items',itemController.getItems)
-//取得單筆商品
+//取得單筆商品 ok
 router.get('/api/items/:id',itemController.getItem)
 
 
 //cart
-//取得購物車
+//取得購物車 ok
 router.get('/api/carts', authenticated, authenticatedUser, cartController.getCarts)
-//新增購物車
+//新增購物車 ok
 router.post('/api/cart', authenticated, authenticatedUser, cartController.addToCart)
-//刪除購物車
+//刪除購物車 ok
 router.delete('/api/carts/:id', authenticated, authenticatedUser, cartController.delCart)
-//刪除所有購物車
+//刪除所有購物車 未使用
 router.delete('/api/cart', authenticated, authenticatedUser, cartController.delCarts)
 
 

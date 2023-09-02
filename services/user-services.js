@@ -301,46 +301,46 @@ const userServices = {
 //         )
 //     },
     getOrders: async (req, cb) => {
-    try {
-        const user = helpers.getUser(req)
-        if (!user || !user.id) {
-            throw new Error('無法取得使用者資訊或使用者ID')
+        try {
+            const user = helpers.getUser(req)
+            if (!user || !user.id) {
+                throw new Error('無法取得使用者資訊或使用者ID')
+            }
+            const userId = user.id
+            const methodId = Number(req.query.MethodId) || ""
+            const orderNumber = Number(req.query.orderNumber) || ""
+            const state = Number(req.query.state) || ""
+            const [ orders, methods ] = await Promise.all([
+                    Order.findAll({
+                    where: { 
+                        UserId: userId,
+                    },
+                    include: {
+                        model: Method,
+                        where: methodId !== "" ? { methodId } : {},
+                        nest: true,
+                        raw: true,
+                    }
+                }),
+                Method.findAll({ raw: true }),
+            ])
+            if (!orders) {
+                throw new Error('無法取得訂單資訊')
+            }
+            if (orders.length === 0) {
+                throw new Error('無訂單資訊')
+            }
+            ordersInfo = await orders.map(order => {
+                    return {...order.dataValues,
+                        createdAt: switchTime(order.createdAt),
+                        updatedAt: switchTime(order.updatedAt)
+                    }
+                })   
+            cb(null, ordersInfo)
+        } catch (err) {
+            cb(err)
         }
-        const userId = user.id
-        const methodId = Number(req.query.MethodId) || ""
-        const orderNumber = Number(req.query.orderNumber) || ""
-        const state = Number(req.query.state) || ""
-        const [ orders, methods ] = await Promise.all([
-                Order.findAll({
-                where: { 
-                    UserId: userId,
-                },
-                include: {
-                    model: Method,
-                    where: methodId !== "" ? { methodId } : {},
-                    nest: true,
-                    raw: true,
-                }
-            }),
-            Method.findAll({ raw: true }),
-        ])
-        if (!orders) {
-            throw new Error('無法取得訂單資訊');
-        }
-        if (orders.length === 0) {
-            throw new Error('無訂單資訊');
-        }
-        ordersInfo = await orders.map(order => {
-                return {...order.dataValues,
-                    createdAt: switchTime(order.createdAt),
-                    updatedAt: switchTime(order.updatedAt)
-                }
-            })   
-        cb(null, ordersInfo);
-    } catch (err) {
-        cb(err);
-    }
-},
+    },
 
 //     getOrder: async (req, cb) => {
 //     try {

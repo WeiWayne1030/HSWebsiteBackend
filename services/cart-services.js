@@ -118,7 +118,7 @@ const cartServices = {
       const newStock = stock.itemStock += cart.itemQuantity
       await stock.update({
       itemStock: newStock,
-     });
+     })
 
       await Cart.destroy({
         where: {
@@ -133,28 +133,30 @@ const cartServices = {
       cb(err)
     }
   },
-  delCarts: async (req, cb) => {
-      try {
-          const userId = helpers.getUser(req).id
-          const carts = await Cart.findAll({
-              where: { UserId: userId },
-          })
 
-          if (carts.length === 0) {
-              throw new Error('目前沒有任何訂單！')
-          }
+  
+  // delCarts: async (req, cb) => {
+  //     try {
+  //         const userId = helpers.getUser(req).id
+  //         const carts = await Cart.findAll({
+  //             where: { UserId: userId },
+  //         })
 
-          await Cart.destroy({
-              where: { UserId: userId },
-          })
+  //         if (carts.length === 0) {
+  //             throw new Error('目前沒有任何訂單！')
+  //         }
 
-          cb(null, {
-        status: '已刪除全部品項！'
-      })
-      } catch (err) {
-          cb(err)
-      }
-  },
+  //         await Cart.destroy({
+  //             where: { UserId: userId },
+  //         })
+
+  //         cb(null, {
+  //       status: '已刪除全部品項！'
+  //     })
+  //     } catch (err) {
+  //         cb(err)
+  //     }
+  // },
 }
 
 
