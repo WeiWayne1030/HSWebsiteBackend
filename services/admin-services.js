@@ -55,21 +55,14 @@ const adminServices = {
                         },
                         {
                             model: Item,
-                            where: stateParam !== "" ? { state: stateParam } : {},
+                            where: [stateParam !== "" ? { state: stateParam } : {}],
+                            include: {
+                                model: Category,
+                                where: categoryId !== "" ? { id: categoryId } : {},
+                            },
                             nest: true,
                             raw: true,
                         }
-                    ],
-                    nest: true,
-                    raw: true,
-                }),
-
-                Item.findAll({
-                    include: [
-                        {
-                            model: Category,
-                            where: categoryId !== "" ? { id: categoryId } : {},
-                        },
                     ],
                     nest: true,
                     raw: true,
