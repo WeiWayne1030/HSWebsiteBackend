@@ -67,8 +67,12 @@ const adminServices = {
                     nest: true,
                     raw: true,
                 }),
+                Item.findAll({
+                    model: Category
+                }),
                 Category.findAll({ raw: true }),
             ])
+            
 
             stocksInfo = await colors.map(color => {
                 return {...color,
