@@ -1,7 +1,8 @@
 const { localFileHandler } = require('../helpers/imgurFileHandler')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt-nodejs')
-const { getOffset, getPagination } = require('../helpers/pagination-helper')
+const { switchTime } = require('../helpers/dayjs-helpers')
+
 
 const { Item, Stock, Color, Size, Cart, User, Order, Method, Category,OrderInfo } = require('../models');
 
@@ -45,7 +46,7 @@ const adminServices = {
         const productNumberParam = req.query.productNumber || ""
 
         try {
-            const [colors, items, categories, sizes] = await Promise.all([
+            const [colors, items, categories] = await Promise.all([
                 Color.findAll({
                     where: productNumberParam !== "" ? { productNumber: productNumberParam } : {},
                     include: [
@@ -76,8 +77,15 @@ const adminServices = {
                 Category.findAll({ raw: true }),
             ])
 
+            stocksInfo = await colors.map(color => {
+                return {...color,
+                    createdAt: switchTime(color.createdAt),
+                    updatedAt: switchTime(color.updatedAt)
+                }
+            })
+
             cb(null, {
-                colors,
+                stocksInfo,
                 items,
                 categories,
                 categoryId,
