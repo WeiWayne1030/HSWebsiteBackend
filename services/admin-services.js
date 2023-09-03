@@ -2,9 +2,10 @@ const { localFileHandler } = require('../helpers/imgurFileHandler')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt-nodejs')
 const { switchTime } = require('../helpers/dayjs-helpers')
+const { getOffset, getPagination } = require('../helpers/pagination-helper')
 
 
-const { Item, Stock, Color, Size, Cart, User, Order, Method, Category,OrderInfo } = require('../models');
+const { Item, Color, Size, Cart, User, Order, Method, Category } = require('../models');
 
 const adminServices = {
     signIn: async(req, cb) => {
@@ -213,29 +214,44 @@ const adminServices = {
     //         cb(err);
     //     }
     // },
-    // slGetOrderInfos: async (req, cb) =>{
-    //     try {
-    //         const DEFAULT_LIMIT = 9
-    //         const MethodId = Number(req.query.MethodId) || ''
-    //         const page = Number(req.query.page) || 1
-    //         const limit = Number(req.query.limit) || DEFAULT_LIMIT
-    //         const offset = getOffset(limit, page)
-    //         const orderInfos = await OrderInfo.findAndCountAll({
-    //             include: [
-    //                 {
-    //                 model: Method,
-    //                 where:  {  ...MethodId ? { MethodId } : {} },   
-    //             }],
-    //             limit,
-    //             offset
-    //         })
-    //         const methods = Method.findAll({ raw: true })
-    //         const pagination = getPagination(limit, page, orderInfos.count)
-    //         cb(null, { orderInfos, methods, MethodId, pagination })
-    //     } catch (err) {
-    //         cb(err)
-    //     }
-    // },
+    getOrders: async (req, cb) => {
+    try {
+        const DEFAULT_LIMIT = 9;
+        const MethodId = Number(req.query.MethodId) || '';
+        const state = req.query.state || "";
+        const orderNumber = req.query.orderNumber || "";
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || DEFAULT_LIMIT;
+        const offset = getOffset(limit, page);
+        const [orders, methods] = await Promise.all([
+            Order.findAndCountAll({
+                include: [
+                    {
+                        model: Method,
+                        where: MethodId ? { MethodId } : {},
+                    }
+                ],
+                limit,
+                offset
+            }),
+            Method.findAll({ raw: true })
+        ]);
+
+        const orderInfos = orders.rows.map(order => {
+            return {
+                ...order.dataValues, 
+                createdAt: switchTime(order.createdAt),
+                updatedAt: switchTime(order.updatedAt)
+            }
+        });
+
+        const pagination = getPagination(limit, page, orders.count);
+
+        cb(null, { orderInfos, methods, MethodId, pagination, state, orderNumber });
+    } catch (err) {
+        cb(err);
+    }
+},
     // slGetOrderInfo: async (req, cb) => {
     //     try {
     //         const id = req.params.id;

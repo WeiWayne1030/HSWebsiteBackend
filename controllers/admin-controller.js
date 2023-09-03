@@ -24,9 +24,9 @@ const adminController = {
   // postStock: (req, res, next) => {
   //     adminServices.postStock(req, (err, data) => err ? next(err) : res.status(200).json(data))
   // },
-  // getOrderInfos: (req, res, next) => {
-  //   adminServices.getOrderInfos(req, (err, data) => err ? next(err) : res.status(200).json(data))
-  // },
+  getOrders: (req, res, next) => {
+    adminServices.getOrders(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
   // getOrderInfo: (req, res, next) => {
   //   adminServices.getOrderInfo(req, (err, data) => err ? next(err) : res.status(200).json(data))
   // },

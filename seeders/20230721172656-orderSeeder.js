@@ -41,7 +41,7 @@ module.exports = {
 
         orders.push({
           orderNumber: orderNumber,
-          state: 0,
+          state: "待出貨",
           shipName: faker.name.findName(),
           UserId: UserId,
           shipTel: faker.phone.phoneNumber(),
