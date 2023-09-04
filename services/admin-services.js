@@ -44,6 +44,40 @@ const adminServices = {
     getItems: async (req, cb) => {
         const categoryId = Number(req.query.CategoryId) || ""
         const stateParam = req.query.state || ""
+
+        try {
+            const [items, categories] = await Promise.all([
+                Item.findAll({
+                where: stateParam !== "" ? { state: stateParam } : {},
+                include: Category,
+                where: categoryId !== "" ? { categoryId } : {},
+                nest: true,
+                raw: true,
+                }),
+                Category.findAll({ raw: true }),
+            ])
+            
+
+            itemsInfo = await items.map(item => {
+                return {...item,
+                    createdAt: switchTime(item.createdAt),
+                    updatedAt: switchTime(item.updatedAt)
+                }
+            })
+
+            cb(null, {
+                itemsInfo,
+                categories,
+                categoryId,
+                stateParam,
+            })
+        } catch (err) {
+            cb(err)
+        }
+    },
+    getStocks: async (req, cb) => {
+        const categoryId = Number(req.query.CategoryId) || ""
+        const stateParam = req.query.state || ""
         const productNumberParam = req.query.productNumber || ""
 
         try {

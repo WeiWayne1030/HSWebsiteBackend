@@ -9,6 +9,9 @@ const adminController = {
   getItems: (req, res, next) => {
       adminServices.getItems(req, (err, data) => err ? next(err) : res.status(200).json(data))
   },
+  getStocks: (req, res, next) => {
+      adminServices.getStocks(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
    delItem: (req, res, next) => {
       adminServices.delItem(req, (err, data) => err ? next(err) : res.status(200).json(data))
   },

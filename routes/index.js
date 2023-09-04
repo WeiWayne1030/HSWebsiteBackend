@@ -57,6 +57,8 @@ router.post('/api/admin/items',upload.single('image'), authenticated, authentica
 // router.post('/api/admin/items/:stockId', authenticated, authenticatedAdmin, adminController.postStock)
 // //修改商品庫存
 // router.put('/api/admin/stock/:id',upload.single('image'), authenticated, authenticatedAdmin, adminController.putStock)
+//檢視所有庫存
+router.get('/api/admin/stocks', authenticated, authenticatedAdmin, adminController.getStocks)
 //檢視所有商品（上架下架）
 router.get('/api/admin/items', authenticated, authenticatedAdmin, adminController.getItems)
 
