@@ -10,14 +10,13 @@ const itemServices = {
         Item.findAll({
           where: { state: true },
           include: Category,
-          where: {
-            state: true,
-            ...(categoryId !== 0 && { categoryId })
-          },
+          where: categoryId !== "" ? { categoryId } : {},
           nest: true,
           raw: true,
         }),
-        Category.findAll({ raw: true }),
+        Category.findAll({ 
+          where: {state: true},
+          raw: true }),
       ])
 
       cb(null, {
