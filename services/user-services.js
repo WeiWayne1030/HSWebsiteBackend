@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 const sequelize = require('sequelize')
 const helpers = require('../_helpers')
 const { Op } = require('sequelize')
-const { User, Order, Method, Cart, Item } = require('../models')
+const { User, Order, Method, Cart } = require('../models')
 const { localFileHandler } = require('../helpers/imgurFileHandler')
 const { switchTime } = require('../helpers/dayjs-helpers')
 
@@ -229,7 +229,7 @@ const userServices = {
                 shipTel: shipTel,
                 MethodId: MethodId,
                 UserId: userId,
-                state: "未出貨",
+                state: "待出貨",
                 itemCount: carts.count,
                 total: total,
             })
@@ -308,16 +308,18 @@ const userServices = {
             }
             const userId = user.id
             const methodId = Number(req.query.MethodId) || ""
-            const orderNumber = Number(req.query.orderNumber) || ""
-            const state = Number(req.query.state) || ""
+            const orderNumber = req.query.orderNumber || ""
+            const state = req.query.state || ""
             const [ orders, methods ] = await Promise.all([
-                    Order.findAll({
+                Order.findAll({
                     where: { 
                         UserId: userId,
+                        ...state !== "" ? { state } : {},
+                        ...orderNumber !== "" ? { orderNumber } : {}
                     },
                     include: {
                         model: Method,
-                        where: methodId !== "" ? { methodId } : {},
+                        where: methodId !== "" ? { id: methodId } : {},
                         nest: true,
                         raw: true,
                     }
@@ -335,8 +337,8 @@ const userServices = {
                         createdAt: switchTime(order.createdAt),
                         updatedAt: switchTime(order.updatedAt)
                     }
-                })   
-            cb(null, ordersInfo)
+                })
+            cb(null,{ ordersInfo, methodId, methods, orderNumber, state })
         } catch (err) {
             cb(err)
         }
