@@ -229,7 +229,7 @@ const userServices = {
                 shipTel: shipTel,
                 MethodId: MethodId,
                 UserId: userId,
-                state: false,
+                state: "未出貨",
                 itemCount: carts.count,
                 total: total,
             })
