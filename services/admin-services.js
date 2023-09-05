@@ -358,20 +358,25 @@ const adminServices = {
     //         cb(err);
     //     }
     // },
+
+    //種類
     postCategory: async (req, cb) => {
         try {
             const { name } = req.body;
-            if (!name) throw new Error('所有欄位不得為空!');
-            await Category.create({
-                name
-            });
+            if (!name) throw new Error('所有欄位不得為空!')
             const category = await Category.findOne({
                 where: { name }
              });
 
-            if (category) {
+            if (category.name === name) {
                 throw new Error('此種類已存在！');
             }
+
+            await Category.create({
+                name:name,
+                state: 1
+            });
+
             cb(null, {
                 status: '已新增類別！'
             });
@@ -379,15 +384,94 @@ const adminServices = {
             cb(err);
         }
     },
-    // getCategories: async (req, cb) => {
-    //     try{
-    //         const categories = await Category.findAll({
+    getCategories: async (req, cb) => {
+        try{
+            const categories = await Category.findAll({
+                attributes:['id', 'name', 'state']
+            })
+            cb(null, categories);
+        } catch(err) {
+             cb(err);
+        }
+    },
+    putCategory: async (req, cb) => {
+        try{
+            const { id } = req.params
+            const { name } = req.body
+            const category = await Category.findOne({
+                where:{ id },
+                attributes:['id', 'name', 'state']
+            })
+            if (!category) throw new Error('種類不存在！')
+            if (!name) throw new Error('請輸入名稱！')
+            if (category.name === name) throw new Error('名稱已存在！')
 
-    //         })
-    //     } catch {
+            await category.update({
+                name: name,
+                state: 1
+            })
+            cb(null,{
+                status: '修改成功！'
+            } );
+        } catch(err) {
+             cb(err);
+        }
+    },
+    removeCategory: async(req, cb) => {
+        try{
+            const { id } = req.params
+            const category = await Category.findOne({
+                where:{ id },
+                attributes:['id', 'name', 'state']
+            })
+            if (!category) throw new Error('種類不存在！')
 
-    //     }
-    // },
+            await category.update({
+                state: 0
+            })
+            cb(null,{
+                status: '移除成功！'
+            } );
+        } catch(err) {
+             cb(err);
+        }
+    },
+    relistCategory: async(req, cb) => {
+        try{
+            const { id } = req.params
+            const category = await Category.findOne({
+                where:{ id },
+                attributes:['id', 'name', 'state']
+            })
+            if (!category) throw new Error('種類不存在！')
+
+            await category.update({
+                state: 1
+            })
+            cb(null,{
+                status: '恢復成功！'
+            } );
+        } catch(err) {
+             cb(err);
+        }
+    },
+    delCategory: async(req, cb) => {
+        try{
+            const { id } = req.params
+            const category = await Category.findByPk(id)
+            if (!category) throw new Error('種類不存在！')
+
+            await category.destroy()
+            cb(null,{
+                status: '刪除成功！'
+            } );
+        } catch(err) {
+             cb(err);
+        }
+    },
+    
+
+
     postColor: async (req, cb) => {
         try {
             const { name } = req.body;
