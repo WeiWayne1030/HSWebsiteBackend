@@ -33,21 +33,30 @@ const adminController = {
   // getOrderInfo: (req, res, next) => {
   //   adminServices.getOrderInfo(req, (err, data) => err ? next(err) : res.status(200).json(data))
   // },
-  // putStock: (req, res, next) => {
-  //   adminServices.putStock(req, (err, data) => err ? next(err) : res.status(200).json(data))
-  // },
-  // postCategory: (req, res, next) => {
-  //   adminServices.postCategory(req, (err, data) => err ? next(err) : res.status(200).json(data))
-  // },
-  // postColor: (req, res, next) => {
-  //   adminServices.postColor(req, (err, data) => err ? next(err) : res.status(200).json(data))
-  // },
-  // postSize: (req, res, next) => {
-  //   adminServices.postSize(req, (err, data) => err ? next(err) : res.status(200).json(data))
-  // },
-  // postMethod: (req, res, next) => {
-  //   adminServices.postMethod(req, (err, data) => err ? next(err) : res.status(200).json(data))
-  // },
+  putStock: (req, res, next) => {
+    adminServices.putStock(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  postCategory: (req, res, next) => {
+    adminServices.postCategory(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  getCategories: (req, res, next) => {
+    adminServices.getCategories(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  putCategory: (req, res, next) => {
+    adminServices.putCategory(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  removeCategory: (req, res, next) => {
+    adminServices.removeCategory(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  postColor: (req, res, next) => {
+    adminServices.postColor(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  postSize: (req, res, next) => {
+    adminServices.postSize(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  postMethod: (req, res, next) => {
+    adminServices.postMethod(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
   // slGetOrderInfos: (req, res, next) => {
   //   adminServices.slGetOrderInfos(req, (err, data) => err ? next(err) : res.status(200).json(data))
   // },

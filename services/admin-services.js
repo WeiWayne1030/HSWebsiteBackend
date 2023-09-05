@@ -358,90 +358,99 @@ const adminServices = {
     //         cb(err);
     //     }
     // },
-    // postCategory: async (req, cb) => {
-    //     try {
-    //         const { name } = req.body;
-    //         if (!name) throw new Error('所有欄位不得為空!');
-    //         await Category.create({
-    //             name
-    //         });
-    //         const category = await Category.findOne({
-    //             where: { name }
-    //          });
+    postCategory: async (req, cb) => {
+        try {
+            const { name } = req.body;
+            if (!name) throw new Error('所有欄位不得為空!');
+            await Category.create({
+                name
+            });
+            const category = await Category.findOne({
+                where: { name }
+             });
 
-    //         if (category) {
-    //             throw new Error('此種類已存在！');
-    //         }
-    //         cb(null, {
-    //             status: '已新增類別！'
-    //         });
-    //     } catch (err) {
-    //         cb(err);
+            if (category) {
+                throw new Error('此種類已存在！');
+            }
+            cb(null, {
+                status: '已新增類別！'
+            });
+        } catch (err) {
+            cb(err);
+        }
+    },
+    // getCategories: async (req, cb) => {
+    //     try{
+    //         const categories = await Category.findAll({
+
+    //         })
+    //     } catch {
+
     //     }
     // },
-    // postColor: async (req, cb) => {
-    //     try {
-    //         const { name } = req.body;
-    //         if (!name) throw new Error('所有欄位不得為空!');
-    //         await Color.create({
-    //             name
-    //         });
-    //         const color = await Color.findOne({
-    //             where: { name }
-    //          });
+    postColor: async (req, cb) => {
+        try {
+            const { name } = req.body;
+            if (!name) throw new Error('所有欄位不得為空!');
+            await Color.create({
+                name
+            });
+            const color = await Color.findOne({
+                where: { name }
+             });
 
-    //         if (color) {
-    //             throw new Error('此顏色種類已存在！');
-    //         }
-    //         cb(null, {
-    //             status: '已新增顏色！'
-    //         });
-    //     } catch (err) {
-    //         cb(err);
-    //     }
-    // },
-    // postSize: async (req, cb) => {
-    //     try {
-    //         const { name } = req.body;
-    //         if (!name) throw new Error('所有欄位不得為空!');
-    //         const size = await Size.findOne({
-    //             where: { name }
-    //          });
-    //         if (size) {
-    //             throw new Error('尺寸種類已存在！');
-    //         }
-    //         await Size.create({
-    //             name
-    //         });
-    //         cb(null, {
-    //             status: '已新增尺寸！'
-    //         });
-    //     } catch (err) {
-    //         cb(err);
-    //     }
-    // },
-    // postMethod: async (req, cb) => {
-    //     try {
-    //         const { name } = req.body;
-    //         if (!name) throw new Error('所有欄位不得為空!');
-    //         const method = await Method.findOne({
-    //             where: { name }
-    //          });
+            if (color) {
+                throw new Error('此顏色種類已存在！');
+            }
+            cb(null, {
+                status: '已新增顏色！'
+            });
+        } catch (err) {
+            cb(err);
+        }
+    },
+    postSize: async (req, cb) => {
+        try {
+            const { name } = req.body;
+            if (!name) throw new Error('所有欄位不得為空!');
+            const size = await Size.findOne({
+                where: { name }
+             });
+            if (size) {
+                throw new Error('尺寸種類已存在！');
+            }
+            await Size.create({
+                name
+            });
+            cb(null, {
+                status: '已新增尺寸！'
+            });
+        } catch (err) {
+            cb(err);
+        }
+    },
+    postMethod: async (req, cb) => {
+        try {
+            const { name } = req.body;
+            if (!name) throw new Error('所有欄位不得為空!');
+            const method = await Method.findOne({
+                where: { name }
+             });
 
-    //         if (method) {
-    //             throw new Error('此付款方式已存在！');
-    //         }
-    //         await Method.create({
-    //             name
-    //         });
+            if (method) {
+                throw new Error('此付款方式已存在！');
+            }
+            await Method.create({
+                name
+            });
 
-    //         cb(null, {
-    //             status: '已新增付款方式！'
-    //         });
-    //     } catch (err) {
-    //         cb(err);
-    //     }
-    // },
+            cb(null, {
+                status: '已新增付款方式！'
+            });
+        } catch (err) {
+            cb(err);
+        }
+    },
 
 
     // delItem: async (req, cb) => {

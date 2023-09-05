@@ -10,7 +10,10 @@ const itemServices = {
         Item.findAll({
           where: { state: true },
           include: Category,
-          where: categoryId !== "" ? { categoryId } : {},
+          where: {
+            state: true,
+            ...(categoryId !== 0 && { categoryId })
+          },
           nest: true,
           raw: true,
         }),

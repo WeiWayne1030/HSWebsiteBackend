@@ -8,7 +8,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Category.init({
-    name: DataTypes.STRING
+    name: DataTypes.STRING,
+    state: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Category',

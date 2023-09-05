@@ -73,14 +73,23 @@ router.get('/api/admin/orders', authenticated, authenticatedAdmin, adminControll
 
 
 // //admin etc
-// //新增商品分類
-// router.post('/api/admin/category', authenticated, authenticatedAdmin, adminController.postCategory)
-// //新增商品顏色
-// router.post('/api/admin/color', authenticated, authenticatedAdmin, adminController.postColor)
-// //新增商品尺寸
-// router.post('/api/admin/size', authenticated, authenticatedAdmin, adminController.postSize)
-// //新增運送方式
-// router.post('/api/admin/method', authenticated, authenticatedAdmin, adminController.postMethod)
+//商品
+
+////新增商品分類
+router.post('/api/admin/category', authenticated, authenticatedAdmin, adminController.postCategory)
+////查詢商品分類
+router.get('/api/admin/category', authenticated, authenticatedAdmin, adminController.getCategories)
+////修改商品分類
+router.put('/api/admin/category/:id', authenticated, authenticatedAdmin, adminController.putCategory)
+////取消商品分類
+router.post('/api/admin/category/:id/remove', authenticated, authenticatedAdmin, adminController.removeCategory)
+
+//新增商品顏色
+router.post('/api/admin/color', authenticated, authenticatedAdmin, adminController.postColor)
+//新增商品尺寸
+router.post('/api/admin/size', authenticated, authenticatedAdmin, adminController.postSize)
+//新增運送方式
+router.post('/api/admin/method', authenticated, authenticatedAdmin, adminController.postMethod)
 
 //item
 //取得所有商品 ok
