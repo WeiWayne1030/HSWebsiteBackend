@@ -67,9 +67,27 @@ const adminController = {
   postColor: (req, res, next) => {
     adminServices.postColor(req, (err, data) => err ? next(err) : res.status(200).json(data))
   },
+
+  //尺寸
   postSize: (req, res, next) => {
     adminServices.postSize(req, (err, data) => err ? next(err) : res.status(200).json(data))
   },
+  getSizes: (req, res, next) => {
+    adminServices.getSizes(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  putSize: (req, res, next) => {
+    adminServices.putSize(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  removeSize: (req, res, next) => {
+    adminServices.removeSize(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  relistSize: (req, res, next) => {
+    adminServices.relistSize(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  delSize: (req, res, next) => {
+    adminServices.delSize(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+
   postMethod: (req, res, next) => {
     adminServices.postMethod(req, (err, data) => err ? next(err) : res.status(200).json(data))
   },

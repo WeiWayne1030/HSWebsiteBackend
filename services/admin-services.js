@@ -360,24 +360,28 @@ const adminServices = {
     // },
 
     //種類
-    postCategory: async (req, cb) => {
-        try {
-            const { name } = req.body;
-            if (!name) throw new Error('所有欄位不得為空!')
-            const category = await Category.findOne({
-                where: { name }
-             });
+postCategory: async (req, cb) => {
+    try {
+        const { name } = req.body;
+        
+        if (!name) {
+            throw new Error('所有欄位不得為空!');
+        }
+        
+        const existingCategory = await Category.findOne({
+            where: { name: name }
+        });
 
-            if (category.name === name) {
-                throw new Error('此種類已存在！');
-            }
+        if (existingCategory) {
+            throw new Error('此種類已存在！');
+        }
+         
+        const newCategory = await Category.create({
+            name: name,
+            state: 1
+        });
 
-            await Category.create({
-                name:name,
-                state: 1
-            });
-
-            cb(null, {
+            cb(null, {newCategory,
                 status: '已新增類別！'
             });
         } catch (err) {
@@ -493,26 +497,122 @@ const adminServices = {
             cb(err);
         }
     },
+
+    //尺寸
     postSize: async (req, cb) => {
-        try {
-            const { name } = req.body;
-            if (!name) throw new Error('所有欄位不得為空!');
-            const size = await Size.findOne({
-                where: { name }
-             });
-            if (size) {
-                throw new Error('尺寸種類已存在！');
-            }
-            await Size.create({
-                name
-            });
-            cb(null, {
-                status: '已新增尺寸！'
+    try {
+        const { name } = req.body;
+        
+        if (!name) {
+            throw new Error('所有欄位不得為空!');
+        }
+        
+        const existingSize = await Size.findOne({
+            where: { name: name }
+        });
+
+        if (existingSize) {
+            throw new Error('此種類已存在！');
+        }
+         
+        const newSize = await Size.create({
+            name: name,
+            state: 1
+        });
+
+            cb(null, {newSize,
+                status: '已新增類別！'
             });
         } catch (err) {
             cb(err);
         }
     },
+    getSizes: async (req, cb) => {
+        try{
+            const sizes = await Size.findAll({
+                attributes:['id', 'name', 'state']
+            })
+            cb(null, sizes);
+        } catch(err) {
+             cb(err);
+        }
+    },
+    putSize: async (req, cb) => {
+        try{
+            const { id } = req.params
+            const { name } = req.body
+            const size = await Size.findOne({
+                where:{ id },
+                attributes:['id', 'name', 'state']
+            })
+            if (!size) throw new Error('尺寸不存在！')
+            if (!name) throw new Error('請輸入名稱！')
+            if (size.name === name) throw new Error('名稱已存在！')
+
+            await size.update({
+                name: name,
+                state: 1
+            })
+            cb(null,{
+                status: '修改成功！'
+            } );
+        } catch(err) {
+             cb(err);
+        }
+    },
+    removeSize: async(req, cb) => {
+        try{
+            const { id } = req.params
+            const size = await Size.findOne({
+                where:{ id },
+                attributes:['id', 'name', 'state']
+            })
+            if (!size) throw new Error('尺寸不存在！')
+
+            await size.update({
+                state: 0
+            })
+            cb(null,{
+                status: '移除成功！'
+            } );
+        } catch(err) {
+             cb(err);
+        }
+    },
+    relistSize: async(req, cb) => {
+        try{
+            const { id } = req.params
+            const size = await Size.findOne({
+                where:{ id },
+                attributes:['id', 'name', 'state']
+            })
+            if (!size) throw new Error('尺寸不存在！')
+
+            await size.update({
+                state: 1
+            })
+            cb(null,{
+                status: '恢復成功！'
+            } );
+        } catch(err) {
+             cb(err);
+        }
+    },
+    delSize: async(req, cb) => {
+        try{
+            const { id } = req.params
+            const size = await Size.findByPk(id)
+            if (!size) throw new Error('種類不存在！')
+
+            await size.destroy()
+            cb(null,{
+                status: '刪除成功！'
+            } );
+        } catch(err) {
+             cb(err);
+        }
+    },
+
     postMethod: async (req, cb) => {
         try {
             const { name } = req.body;
@@ -535,6 +635,7 @@ const adminServices = {
             cb(err);
         }
     },
+    
 
 
     // delItem: async (req, cb) => {

@@ -80,23 +80,47 @@ router.post('/api/admin/category', authenticated, authenticatedAdmin, adminContr
 ////查詢商品分類
 router.get('/api/admin/categories', authenticated, authenticatedAdmin, adminController.getCategories)
 ////修改商品分類
-router.put('/api/admin/category/:id', authenticated, authenticatedAdmin, adminController.putCategory)
+router.put('/api/admin/categories/:id', authenticated, authenticatedAdmin, adminController.putCategory)
 ////取消商品分類
-router.post('/api/admin/category/:id/remove', authenticated, authenticatedAdmin, adminController.removeCategory)
+router.post('/api/admin/categories/:id/remove', authenticated, authenticatedAdmin, adminController.removeCategory)
 ////恢復商品分類
-router.post('/api/admin/category/:id/relist', authenticated, authenticatedAdmin, adminController.relistCategory)
-////刪除商品
-router.delete('/api/admin/category/:id', authenticated, authenticatedAdmin, adminController.delCategory)
+router.post('/api/admin/categories/:id/relist', authenticated, authenticatedAdmin, adminController.relistCategory)
+////刪除商品類別
+router.delete('/api/admin/categories/:id', authenticated, authenticatedAdmin, adminController.delCategory)
 
 //付款方式
-//新增付款方式
-router.post('/api/admin/method', authenticated, authenticatedAdmin, adminController.postMethod)
+// ////新增付款方式
+// router.post('/api/admin/method', authenticated, authenticatedAdmin, adminController.postMethod)
+// ////查詢付款方式
+// router.get('/api/admin/methods', authenticated, authenticatedAdmin, adminController.getMethods)
+// ////修改付款方式
+// router.put('/api/admin/method/:id', authenticated, authenticatedAdmin, adminController.putMethod)
+// ////取消付款方式
+// router.post('/api/admin/method/:id/remove', authenticated, authenticatedAdmin, adminController.removeMethod)
+// ////恢復付款方式
+// router.post('/api/admin/method/:id/relist', authenticated, authenticatedAdmin, adminController.relistMethod)
+// ////刪除付款方式
+// router.delete('/api/admin/method/:id', authenticated, authenticatedAdmin, adminController.delMethod)
 
 
 //新增商品顏色
 router.post('/api/admin/color', authenticated, authenticatedAdmin, adminController.postColor)
+
+
+//尺寸
+
 //新增商品尺寸
 router.post('/api/admin/size', authenticated, authenticatedAdmin, adminController.postSize)
+////查詢商品尺寸
+router.get('/api/admin/sizes', authenticated, authenticatedAdmin, adminController.getSizes)
+////修改商品尺寸
+router.put('/api/admin/sizes/:id', authenticated, authenticatedAdmin, adminController.putSize)
+////取消商品尺寸
+router.post('/api/admin/sizes/:id/remove', authenticated, authenticatedAdmin, adminController.removeSize)
+////恢復商品尺寸
+router.post('/api/admin/sizes/:id/relist', authenticated, authenticatedAdmin, adminController.relistSize)
+////刪除商品尺寸
+router.delete('/api/admin/sizes/:id', authenticated, authenticatedAdmin, adminController.delSize)
 
 
 //item

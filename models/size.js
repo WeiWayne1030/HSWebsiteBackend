@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Size.init({
     name: DataTypes.STRING,
+    state: DataTypes.BOOLEAN
   }, {
     sequelize,
     modelName: 'Size',
