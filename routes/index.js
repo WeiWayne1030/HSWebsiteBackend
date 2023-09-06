@@ -89,18 +89,19 @@ router.post('/api/admin/categories/:id/relist', authenticated, authenticatedAdmi
 router.delete('/api/admin/categories/:id', authenticated, authenticatedAdmin, adminController.delCategory)
 
 //付款方式
-// ////新增付款方式
-// router.post('/api/admin/method', authenticated, authenticatedAdmin, adminController.postMethod)
-// ////查詢付款方式
-// router.get('/api/admin/methods', authenticated, authenticatedAdmin, adminController.getMethods)
-// ////修改付款方式
-// router.put('/api/admin/method/:id', authenticated, authenticatedAdmin, adminController.putMethod)
-// ////取消付款方式
-// router.post('/api/admin/method/:id/remove', authenticated, authenticatedAdmin, adminController.removeMethod)
-// ////恢復付款方式
-// router.post('/api/admin/method/:id/relist', authenticated, authenticatedAdmin, adminController.relistMethod)
-// ////刪除付款方式
-// router.delete('/api/admin/method/:id', authenticated, authenticatedAdmin, adminController.delMethod)
+
+////新增付款方式
+router.post('/api/admin/method', authenticated, authenticatedAdmin, adminController.postMethod)
+////查詢付款方式
+router.get('/api/admin/methods', authenticated, authenticatedAdmin, adminController.getMethods)
+////修改付款方式
+router.put('/api/admin/methods/:id', authenticated, authenticatedAdmin, adminController.putMethod)
+////取消付款方式
+router.post('/api/admin/methods/:id/remove', authenticated, authenticatedAdmin, adminController.removeMethod)
+////恢復付款方式
+router.post('/api/admin/methods/:id/relist', authenticated, authenticatedAdmin, adminController.relistMethod)
+////刪除付款方式
+router.delete('/api/admin/methods/:id', authenticated, authenticatedAdmin, adminController.delMethod)
 
 
 //新增商品顏色

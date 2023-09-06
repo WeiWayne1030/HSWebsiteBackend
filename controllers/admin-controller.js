@@ -91,6 +91,26 @@ const adminController = {
   postMethod: (req, res, next) => {
     adminServices.postMethod(req, (err, data) => err ? next(err) : res.status(200).json(data))
   },
+   getMethods: (req, res, next) => {
+    adminServices.getMethods(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  putMethod: (req, res, next) => {
+    adminServices.putMethod(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  removeMethod: (req, res, next) => {
+    adminServices.removeMethod(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  relistMethod: (req, res, next) => {
+    adminServices.relistMethod(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  delMethod: (req, res, next) => {
+    adminServices.delMethod(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+
+
+
+
+
   // slGetOrderInfos: (req, res, next) => {
   //   adminServices.slGetOrderInfos(req, (err, data) => err ? next(err) : res.status(200).json(data))
   // },

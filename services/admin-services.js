@@ -5,7 +5,7 @@ const { switchTime } = require('../helpers/dayjs-helpers')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 
 
-const { Item, Color, Size, Cart, User, Order, Method, Category } = require('../models');
+const { Item, Color, Size, Cart, User, Order, Method, Category } = require('../models')
 
 const adminServices = {
     signIn: async(req, cb) => {
@@ -180,19 +180,19 @@ const adminServices = {
     },
     postItem: async (req, cb) => {
         try {
-            const { name, price, description, CategoryId } = req.body;
+            const { name, price, description, CategoryId } = req.body
             if (!name || !price || !description || !CategoryId ) {
-                throw new Error('所有欄位不得為空!');
+                throw new Error('所有欄位不得為空!')
             }
             const item = await Item.findOne({
             where: { name }
-            });
+            })
             if (item) {
-                throw new Error('此商品已存在！');
+                throw new Error('此商品已存在！')
             }
-            const { file } = req; 
+            const { file } = req
             
-            const filePath = await localFileHandler(file); 
+            const filePath = await localFileHandler(file)
             await Item.create({
                 name,
                 state: 1,
@@ -200,38 +200,38 @@ const adminServices = {
                 description,
                 image: filePath || null,
                 CategoryId
-            });
+            })
             cb(null, {
                 status: '已新增品項！'
-            });
+            })
         } catch (err) {
-            cb(err);
+            cb(err)
         }
     },
     // postStock: async (req, cb) => {
     //     try {
-    //         const id = req.params.stockId;
-    //         const { itemStock, ColorId, SizeId } = req.body;
+    //         const id = req.params.stockId
+    //         const { itemStock, ColorId, SizeId } = req.body
     //         if (!itemStock || !ColorId || !SizeId) {
-    //             throw new Error('所有欄位不得為空!');
+    //             throw new Error('所有欄位不得為空!')
     //         }
     //         if (!id) {
-    //             throw new Error('此商品不存在！');
+    //             throw new Error('此商品不存在！')
     //         }
     //         const item = await Item.findOne({
     //             where: { id }
-    //         });
+    //         })
     //         if (!item) {
-    //             throw new Error('找不到對應的商品！');
+    //             throw new Error('找不到對應的商品！')
     //         }
     //         const stock = await Stock.findOne({
     //             where: { ItemId: id, ColorId, SizeId }
-    //         });
+    //         })
     //         if (stock) {
-    //             throw new Error('此商品庫存已存在！');
+    //             throw new Error('此商品庫存已存在！')
     //         }
     //         if (itemStock < 0) {
-    //             throw new Error('庫存不得小於0！');
+    //             throw new Error('庫存不得小於0！')
     //         }
     //         await Stock.create({
     //             productNumber: `ST${Date.now().toString().padStart(10, '0')}`,
@@ -239,24 +239,24 @@ const adminServices = {
     //             ColorId,
     //             SizeId,
     //             ItemId: id
-    //         });
+    //         })
     //         cb(null, {
     //             status: '已新增庫存！'
-    //         });
+    //         })
     //     } catch (err) {
-    //         console.error(err);
-    //         cb(err);
+    //         console.error(err)
+    //         cb(err)
     //     }
     // },
     getOrders: async (req, cb) => {
     try {
-        const DEFAULT_LIMIT = 9;
-        const MethodId = Number(req.query.MethodId) || '';
-        const state = req.query.state || "";
-        const orderNumber = req.query.orderNumber || "";
-        const page = Number(req.query.page) || 1;
-        const limit = Number(req.query.limit) || DEFAULT_LIMIT;
-        const offset = getOffset(limit, page);
+        const DEFAULT_LIMIT = 9
+        const MethodId = Number(req.query.MethodId) || ''
+        const state = req.query.state || ""
+        const orderNumber = req.query.orderNumber || ""
+        const page = Number(req.query.page) || 1
+        const limit = Number(req.query.limit) || DEFAULT_LIMIT
+        const offset = getOffset(limit, page)
         const [orders, methods] = await Promise.all([
             Order.findAndCountAll({
                 include: [
@@ -269,7 +269,7 @@ const adminServices = {
                 offset
             }),
             Method.findAll({ raw: true })
-        ]);
+        ])
 
         const orderInfos = orders.rows.map(order => {
             return {
@@ -277,20 +277,20 @@ const adminServices = {
                 createdAt: switchTime(order.createdAt),
                 updatedAt: switchTime(order.updatedAt)
             }
-        });
+        })
 
-        const pagination = getPagination(limit, page, orders.count);
+        const pagination = getPagination(limit, page, orders.count)
 
-        cb(null, { orderInfos, methods, MethodId, pagination, state, orderNumber });
+        cb(null, { orderInfos, methods, MethodId, pagination, state, orderNumber })
     } catch (err) {
-        cb(err);
+        cb(err)
     }
 },
     // slGetOrderInfo: async (req, cb) => {
     //     try {
-    //         const id = req.params.id;
+    //         const id = req.params.id
     //         if (!id) {
-    //             throw new Error('此訂單不存在！');
+    //             throw new Error('此訂單不存在！')
     //         }
     //         const orderInfo = await OrderInfo.findOne({
     //             id,
@@ -299,21 +299,21 @@ const adminServices = {
     //         }],
 
     //             order: [['createdAt', 'DESC']] 
-    //         });
+    //         })
     //         if (!orderInfo) {
-    //             throw new Error('找不到對應的訂單！');
+    //             throw new Error('找不到對應的訂單！')
     //         }
-    //         cb(null, orderInfo);
+    //         cb(null, orderInfo)
     //     } catch (err) {
-    //         cb(err);
+    //         cb(err)
     //     }
     // },
     // putStock: async (req, cb) => {
     //     try {
-    //         const id = req.params.id;
-    //         const { name, price, description, CategoryId, itemStock, ColorId, SizeId } = req.body;
+    //         const id = req.params.id
+    //         const { name, price, description, CategoryId, itemStock, ColorId, SizeId } = req.body
     //         if (!name || !price || !description || !itemStock || !ColorId || !SizeId || !CategoryId) {
-    //             throw new Error('所有欄位不得為空!');
+    //             throw new Error('所有欄位不得為空!')
     //         }
 
     //         // Find the stock record with the provided ID
@@ -322,18 +322,18 @@ const adminServices = {
     //             include: [{
     //                 model: Item
     //             }]
-    //         });
+    //         })
 
     //         // Check if a valid stock record is found
     //         if (!stock) {
-    //             throw new Error('找不到該庫存記錄!');
+    //             throw new Error('找不到該庫存記錄!')
     //         }
 
     //         // Find the associated item
-    //         const item = stock.Item;
+    //         const item = stock.Item
 
-    //         const { file } = req;
-    //         const filePath = await localFileHandler(file);
+    //         const { file } = req
+    //         const filePath = await localFileHandler(file)
 
     //         // Update the item details
     //         await item.update({
@@ -342,50 +342,50 @@ const adminServices = {
     //             description,
     //             image: filePath || null,
     //             CategoryId
-    //         });
+    //         })
 
     //         // Update the stock details
     //         await stock.update({
     //             itemStock,
     //             ColorId,
     //             SizeId
-    //         });
+    //         })
 
     //         cb(null, {
     //             status: '已更新庫存！'
-    //         });
+    //         })
     //     } catch (err) {
-    //         cb(err);
+    //         cb(err)
     //     }
     // },
 
     //種類
-postCategory: async (req, cb) => {
+    postCategory: async (req, cb) => {
     try {
-        const { name } = req.body;
+        const { name } = req.body
         
         if (!name) {
-            throw new Error('所有欄位不得為空!');
+            throw new Error('所有欄位不得為空!')
         }
         
         const existingCategory = await Category.findOne({
             where: { name: name }
-        });
+        })
 
         if (existingCategory) {
-            throw new Error('此種類已存在！');
+            throw new Error('此種類已存在！')
         }
          
         const newCategory = await Category.create({
             name: name,
             state: 1
-        });
+        })
 
             cb(null, {newCategory,
                 status: '已新增類別！'
-            });
+            })
         } catch (err) {
-            cb(err);
+            cb(err)
         }
     },
     getCategories: async (req, cb) => {
@@ -393,9 +393,9 @@ postCategory: async (req, cb) => {
             const categories = await Category.findAll({
                 attributes:['id', 'name', 'state']
             })
-            cb(null, categories);
+            cb(null, categories)
         } catch(err) {
-             cb(err);
+             cb(err)
         }
     },
     putCategory: async (req, cb) => {
@@ -416,9 +416,9 @@ postCategory: async (req, cb) => {
             })
             cb(null,{
                 status: '修改成功！'
-            } );
+            } )
         } catch(err) {
-             cb(err);
+             cb(err)
         }
     },
     removeCategory: async(req, cb) => {
@@ -435,9 +435,9 @@ postCategory: async (req, cb) => {
             })
             cb(null,{
                 status: '移除成功！'
-            } );
+            } )
         } catch(err) {
-             cb(err);
+             cb(err)
         }
     },
     relistCategory: async(req, cb) => {
@@ -454,9 +454,9 @@ postCategory: async (req, cb) => {
             })
             cb(null,{
                 status: '恢復成功！'
-            } );
+            } )
         } catch(err) {
-             cb(err);
+             cb(err)
         }
     },
     delCategory: async(req, cb) => {
@@ -468,9 +468,9 @@ postCategory: async (req, cb) => {
             await category.destroy()
             cb(null,{
                 status: '刪除成功！'
-            } );
+            } )
         } catch(err) {
-             cb(err);
+             cb(err)
         }
     },
     
@@ -478,63 +478,63 @@ postCategory: async (req, cb) => {
 
     postColor: async (req, cb) => {
         try {
-            const { name } = req.body;
-            if (!name) throw new Error('所有欄位不得為空!');
+            const { name } = req.body
+            if (!name) throw new Error('所有欄位不得為空!')
             await Color.create({
                 name
-            });
+            })
             const color = await Color.findOne({
                 where: { name }
-             });
+             })
 
             if (color) {
-                throw new Error('此顏色種類已存在！');
+                throw new Error('此顏色種類已存在！')
             }
             cb(null, {
-                status: '已新增顏色！'
-            });
+                sttus: '已新增顏色！'
+            })
         } catch (err) {
-            cb(err);
+            cb(err)
         }
     },
 
     //尺寸
     postSize: async (req, cb) => {
-    try {
-        const { name } = req.body;
-        
-        if (!name) {
-            throw new Error('所有欄位不得為空!');
-        }
-        
-        const existingSize = await Size.findOne({
-            where: { name: name }
-        });
+        try {
+            const { name } = req.body
+            
+            if (!name) {
+                throw new Error('所有欄位不得為空!')
+            }
+            
+            const existingSize = await Size.findOne({
+                where: { name: name }
+            })
 
-        if (existingSize) {
-            throw new Error('此種類已存在！');
-        }
-         
-        const newSize = await Size.create({
-            name: name,
-            state: 1
-        });
+            if (existingSize) {
+                throw new Error('此種類已存在！')
+            }
+            
+            const newSize = await Size.create({
+                name: name,
+                state: 1
+            })
 
-            cb(null, {newSize,
-                status: '已新增類別！'
-            });
-        } catch (err) {
-            cb(err);
-        }
-    },
+                cb(null, {newSize,
+                    status: '已新增類別！'
+                })
+            } catch (err) {
+                cb(err)
+            }
+        },
     getSizes: async (req, cb) => {
         try{
             const sizes = await Size.findAll({
                 attributes:['id', 'name', 'state']
             })
-            cb(null, sizes);
+            cb(null, sizes)
         } catch(err) {
-             cb(err);
+             cb(err)
         }
     },
     putSize: async (req, cb) => {
@@ -555,9 +555,9 @@ postCategory: async (req, cb) => {
             })
             cb(null,{
                 status: '修改成功！'
-            } );
+            } )
         } catch(err) {
-             cb(err);
+             cb(err)
         }
     },
     removeSize: async(req, cb) => {
@@ -574,9 +574,9 @@ postCategory: async (req, cb) => {
             })
             cb(null,{
                 status: '移除成功！'
-            } );
+            } )
         } catch(err) {
-             cb(err);
+             cb(err)
         }
     },
     relistSize: async(req, cb) => {
@@ -593,9 +593,9 @@ postCategory: async (req, cb) => {
             })
             cb(null,{
                 status: '恢復成功！'
-            } );
+            } )
         } catch(err) {
-             cb(err);
+             cb(err)
         }
     },
     delSize: async(req, cb) => {
@@ -607,32 +607,124 @@ postCategory: async (req, cb) => {
             await size.destroy()
             cb(null,{
                 status: '刪除成功！'
-            } );
+            } )
         } catch(err) {
-             cb(err);
+             cb(err)
         }
     },
 
+    //付款方式
     postMethod: async (req, cb) => {
         try {
-            const { name } = req.body;
-            if (!name) throw new Error('所有欄位不得為空!');
-            const method = await Method.findOne({
-                where: { name }
-             });
-
-            if (method) {
-                throw new Error('此付款方式已存在！');
+            const { name } = req.body
+            
+            if (!name) {
+                throw new Error('所有欄位不得為空!')
             }
-            await Method.create({
-                name
-            });
+            
+            const existingMethod = await Method.findOne({
+                where: { name: name }
+            })
 
-            cb(null, {
-                status: '已新增付款方式！'
-            });
-        } catch (err) {
-            cb(err);
+            if (existingMethod) {
+                throw new Error('此種類已存在！')
+            }
+            
+            const newMethod = await Method.create({
+                name: name,
+                state: 1
+            })
+
+                cb(null, {newMethod,
+                    status: '已新增類別！'
+                })
+            } catch (err) {
+                cb(err)
+            }
+        },
+    getMethods: async (req, cb) => {
+        try{
+            const methods = await Method.findAll({
+                attributes:['id', 'name', 'state']
+            })
+            cb(null, methods)
+        } catch(err) {
+             cb(err)
+        }
+    },
+    putMethod: async (req, cb) => {
+        try{
+            const { id } = req.params
+            const { name } = req.body
+            const method = await Method.findOne({
+                where:{ id },
+                attributes:['id', 'name', 'state']
+            })
+            if (!method) throw new Error('尺寸不存在！')
+            if (!name) throw new Error('請輸入名稱！')
+            if (method.name === name) throw new Error('名稱已存在！')
+
+            await method.update({
+                name: name,
+                state: 1
+            })
+            cb(null,{
+                status: '修改成功！'
+            } )
+        } catch(err) {
+             cb(err)
+        }
+    },
+    removeMethod: async(req, cb) => {
+        try{
+            const { id } = req.params
+            const method = await Method.findOne({
+                where:{ id },
+                attributes:['id', 'name', 'state']
+            })
+            if (!method) throw new Error('尺寸不存在！')
+
+            await method.update({
+                state: 0
+            })
+            cb(null,{
+                status: '移除成功！'
+            } )
+        } catch(err) {
+             cb(err)
+        }
+    },
+    relistMethod: async(req, cb) => {
+        try{
+            const { id } = req.params
+            const method = await Method.findOne({
+                where:{ id },
+                attributes:['id', 'name', 'state']
+            })
+            if (!method) throw new Error('尺寸不存在！')
+
+            await method.update({
+                state: 1
+            })
+            cb(null,{
+                status: '恢復成功！'
+            } )
+        } catch(err) {
+             cb(err)
+        }
+    },
+    delMethod: async(req, cb) => {
+        try{
+            const { id } = req.params
+            const method = await Method.findByPk(id)
+            if (!method) throw new Error('種類不存在！')
+
+            await method.destroy()
+            cb(null,{
+                status: '刪除成功！'
+            } )
+        } catch(err) {
+             cb(err)
         }
     },
     
@@ -640,40 +732,40 @@ postCategory: async (req, cb) => {
 
     // delItem: async (req, cb) => {
     //     try {
-    //         const id = req.params.id;
+    //         const id = req.params.id
 
     //         // 筛选在Stock模型中符合req.params.id的ItemId的Stock.id
     //         const stockIds = await Color.findAll({
     //         where: { ItemId: id },
     //         attributes: ['id'],
-    //         }).map(stock => stock.id);
+    //         }).map(stock => stock.id)
 
 
     //         // 删除Item模型中的所有记录
     //         await Item.destroy({
     //         where: { id: id },
-    //         });
+    //         })
 
     //         // 删除Cart模型中与筛选出的StockId相匹配的记录
     //         if (stockIds){
     //             await Cart.destroy({
     //             where: { ColorId: stockIds },
-    //             });
+    //             })
     //         }
             
     //         //删除Color模型中与筛选出的StockId相匹配的记录
     //         await Color.destroy({
     //         where: { ItemId: id },
-    //         });
+    //         })
 
     //         cb(null, {
     //         status: '產品已刪除！',
-    //         });
+    //         })
     //     } catch (err) {
-    //     cb(err);
+    //     cb(err)
     //     }
     // }
 
-};
+}
   
 module.exports = adminServices
