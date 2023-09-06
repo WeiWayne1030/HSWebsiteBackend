@@ -46,7 +46,6 @@ const userServices = {
             const {
                 email, name, account, password, checkPassword
             } = req.body
-            console.log(email, name, account, password, checkPassword)
             if (!email || !name || !account || !password || !checkPassword) throw new Error('所有欄位皆為必填！')
             const users = await User.findAll()
             if (users.length > 0) {
@@ -59,7 +58,7 @@ const userServices = {
                 }
             }
             if (!name) throw new Error('請填入名稱！')
-            if (name.length >= 50) throw new Error('名稱不可超過50字！')
+            if (name.length >= 20) throw new Error('名稱不可超過20字！')
             if (password !== checkPassword) throw new Error('密碼與確認密碼不一致！')
             const salt = bcrypt.genSaltSync(10)
             const hash = bcrypt.hashSync(password, salt)
@@ -82,72 +81,72 @@ const userServices = {
         }
     },
     getUser: async (req, cb) => {
-    try {
-        const { id } = req.params;
-        const user = await User.findByPk(id);
-        const { password, ...userData } = user.toJSON();
-        cb(null, userData);
-    } catch (err) {
-        cb(err);
-    }
+        try {
+            const user = await User.findOne({
+                where: { id: helpers.getUser(req).id },
+                attributes: { exclude: ['password'] } // Exclude the 'password' field from the result
+            });
+
+            if (!user) {
+                return cb(new Error('User not found'));
+            }
+
+            const userInfo = {
+                ...user.toJSON(),
+                createdAt: switchTime(user.createdAt),
+                updatedAt: switchTime(user.updatedAt)
+            };
+
+            cb(null, userInfo);
+        } catch (err) {
+            cb(err);
+        }
     },
     putUser: async (req, cb) => {
-        const { id } = req.params
-        const { name, account, email, password, sex, telNumber, introduction,checkPassword } = req.body
-        const { file } = req
-        if (!name) throw new Error('請填入名稱！')
-        if (password !== checkPassword) throw new Error('密碼與確認密碼不一致！')
-        if (name.length >= 50) throw new Error('名稱不可超過50字！')
-        if (introduction.length >= 160) throw new Error('自我介紹不可超過160字！')
-        let salt = null
-        let hash = null
+    const { name, account, email, password, sex, telNumber, introduction, checkPassword } = req.body;
+    const { file } = req;
+
+    if (!name) throw new Error('請填入名稱！');
+    if (password && password !== checkPassword) throw new Error('密碼與確認密碼不一致！');
+    if (name.length >= 50) throw new Error('名稱不可超過50字！');
+    if (introduction.length >= 160) throw new Error('自我介紹不可超過160字！');
+
+    try {
+        const user = await User.findOne({
+            where: { id: helpers.getUser(req).id }
+        });
+
+        if (!user) throw new Error("使用者不存在！");
+
+        let hashedPassword = user.password; // Keep the existing password by default
+
         if (password) {
-            salt = bcrypt.genSaltSync(10)
-            hash = bcrypt.hashSync(password, salt)
+            const salt = bcrypt.genSaltSync(10);
+            hashedPassword = bcrypt.hashSync(password, salt);
         }
-        return Promise.all([
-            User.findAll({
-                raw: true,
-                where: { id: { [Op.ne]: id } } // 找出除了使用者本人以外的所有使用者
+
+        const [updatedUser, filePath] = await Promise.all([
+            user.update({
+                name,
+                account,
+                email,
+                password: hashedPassword,
+                sex,
+                telNumber,
+                introduction,
+                avatar: file ? await localFileHandler(file) : user.avatar
             }),
-            User.findByPk(id),
             localFileHandler(file)
-        ])
-            .then(([allUsers, user, filePath]) => {
-                if (allUsers.length > 0) {
-                    const existingAccount = allUsers.find(user => user.account === account)
-                    const existingEmail = allUsers.find(user => user.email === email)
-                    if (existingAccount) {
-                        throw new Error('帳號已存在！')
-                    } else if (existingEmail) {
-                        throw new Error('信箱已存在！')
-                    }
-                }
-                if (!user) throw new Error("使用者不存在！")
-                if (user.id !== Number(id)) throw new Error('只能編輯自己的使用者資料！')
-                user.update({
-                    name,
-                    account,
-                    email,
-                    password: hash || user.password,
-                    sex,
-                    telNumber,
-                    introduction,
-                    avatar: filePath || user.avatar,
-                })
-                    .then(updateUser => {
-                        const userData = updateUser.toJSON()
-                        delete userData.password
-                        cb(null, userData)
-                    })
-                    .catch(err => {
-                        cb(err)
-                    })
-            })
-            .catch(err => {
-                cb(err)
-            })
-    },
+        ]);
+
+        const userData = updatedUser.toJSON();
+        delete userData.password;
+
+        cb(null, userData)
+    } catch (err) {
+        throw err; // Handle the error at a higher level or return it as needed
+    }
+},
     // orderInfo: async (req, cb) => {
     //     try {
     //         const { id } = req.params;

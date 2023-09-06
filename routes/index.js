@@ -21,10 +21,10 @@ router.post('/api/users/signin', userController.signIn)
 router.post('/api/users', userController.signUp)
 
 //user
-//使用者資料
-router.get('/api/users/:id/profile', authenticated, authenticatedUser, userController.getUser)
-//修改使用者資料
-router.put('/api/users/:id/profile',upload.single('image'), authenticated, authenticatedUser, userController.putUser)
+//個人資料
+router.get('/api/user/profile', authenticated, authenticatedUser, userController.getUser)
+//修改個人資料
+router.put('/api/user/profile',upload.single('image'), authenticated, authenticatedUser, userController.putUser)
 
 
 
