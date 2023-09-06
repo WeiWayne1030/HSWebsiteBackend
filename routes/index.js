@@ -74,7 +74,6 @@ router.get('/api/admin/orders', authenticated, authenticatedAdmin, adminControll
 
 // //admin etc
 //分類
-
 ////新增商品分類
 router.post('/api/admin/category', authenticated, authenticatedAdmin, adminController.postCategory)
 ////查詢商品分類
@@ -89,7 +88,6 @@ router.post('/api/admin/categories/:id/relist', authenticated, authenticatedAdmi
 router.delete('/api/admin/categories/:id', authenticated, authenticatedAdmin, adminController.delCategory)
 
 //付款方式
-
 ////新增付款方式
 router.post('/api/admin/method', authenticated, authenticatedAdmin, adminController.postMethod)
 ////查詢付款方式
@@ -104,13 +102,21 @@ router.post('/api/admin/methods/:id/relist', authenticated, authenticatedAdmin, 
 router.delete('/api/admin/methods/:id', authenticated, authenticatedAdmin, adminController.delMethod)
 
 
-//新增商品顏色
+//顏色
+////新增商品顏色
 router.post('/api/admin/color', authenticated, authenticatedAdmin, adminController.postColor)
+////查詢商品顏色
+router.get('/api/admin/colors', authenticated, authenticatedAdmin, adminController.getColors)
+////取消商品顏色
+router.post('/api/admin/colors/:id/remove', authenticated, authenticatedAdmin, adminController.removeColor)
+////恢復商品顏色
+router.post('/api/admin/colors/:id/relist', authenticated, authenticatedAdmin, adminController.relistColor)
+////刪除商品顏色
+router.delete('/api/admin/colors/:id', authenticated, authenticatedAdmin, adminController.delColor)
 
 
 //尺寸
-
-//新增商品尺寸
+////新增商品尺寸
 router.post('/api/admin/size', authenticated, authenticatedAdmin, adminController.postSize)
 ////查詢商品尺寸
 router.get('/api/admin/sizes', authenticated, authenticatedAdmin, adminController.getSizes)

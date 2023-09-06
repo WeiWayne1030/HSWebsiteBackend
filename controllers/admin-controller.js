@@ -63,9 +63,21 @@ const adminController = {
     adminServices.delCategory(req, (err, data) => err ? next(err) : res.status(200).json(data))
   },
 
-
+  //顏色
   postColor: (req, res, next) => {
     adminServices.postColor(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  getColors: (req, res, next) => {
+    adminServices.getColors(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  removeColor: (req, res, next) => {
+    adminServices.removeColor(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  relistColor: (req, res, next) => {
+    adminServices.relistColor(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  delColor: (req, res, next) => {
+    adminServices.delColor(req, (err, data) => err ? next(err) : res.status(200).json(data))
   },
 
   //尺寸
@@ -88,6 +100,7 @@ const adminController = {
     adminServices.delSize(req, (err, data) => err ? next(err) : res.status(200).json(data))
   },
 
+  //付款方式
   postMethod: (req, res, next) => {
     adminServices.postMethod(req, (err, data) => err ? next(err) : res.status(200).json(data))
   },

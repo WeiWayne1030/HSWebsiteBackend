@@ -50,6 +50,7 @@ module.exports = {
           name: colorName,
           productNumber,
           itemStock: Math.floor(Math.random() * 10),
+          state: true,
           ItemId: itemId,
           SizeId: selectedSize.id,
           createdAt: new Date(),

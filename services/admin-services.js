@@ -208,6 +208,45 @@ const adminServices = {
             cb(err)
         }
     },
+    // delItem: async (req, cb) => {
+    //     try {
+    //         const id = req.params.id
+
+    //         // 筛选在Stock模型中符合req.params.id的ItemId的Stock.id
+    //         const stockIds = await Color.findAll({
+    //         where: { ItemId: id },
+    //         attributes: ['id'],
+    //         }).map(stock => stock.id)
+
+
+    //         // 删除Item模型中的所有记录
+    //         await Item.destroy({
+    //         where: { id: id },
+    //         })
+
+    //         // 删除Cart模型中与筛选出的StockId相匹配的记录
+    //         if (stockIds){
+    //             await Cart.destroy({
+    //             where: { ColorId: stockIds },
+    //             })
+    //         }
+            
+    //         //删除Color模型中与筛选出的StockId相匹配的记录
+    //         await Color.destroy({
+    //         where: { ItemId: id },
+    //         })
+
+    //         cb(null, {
+    //         status: '產品已刪除！',
+    //         })
+    //     } catch (err) {
+    //     cb(err)
+    //     }
+    // },
+
+
+
+
     // postStock: async (req, cb) => {
     //     try {
     //         const id = req.params.stockId
@@ -285,7 +324,7 @@ const adminServices = {
     } catch (err) {
         cb(err)
     }
-},
+    },
     // slGetOrderInfo: async (req, cb) => {
     //     try {
     //         const id = req.params.id
@@ -358,6 +397,7 @@ const adminServices = {
     //         cb(err)
     //     }
     // },
+
 
     //種類
     postCategory: async (req, cb) => {
@@ -475,26 +515,111 @@ const adminServices = {
     },
     
 
-
+    //顏色
     postColor: async (req, cb) => {
-        try {
-            const { name } = req.body
-            if (!name) throw new Error('所有欄位不得為空!')
-            await Color.create({
-                name
-            })
-            const color = await Color.findOne({
-                where: { name }
-             })
+    try {
+        const { name, itemId, sizeId, itemStock } = req.body
+        
+        if (!name || !itemId || !sizeId || !itemStock) throw new Error('所有欄位皆為必填！')
+        
+        const colors = await Color.findAll()
 
-            if (color) {
-                throw new Error('此顏色種類已存在！')
+       // 使用some方法检查是否存在匹配的颜色数据
+        if (colors.some(colorItem => colorItem.name === name && colorItem.ItemId === Number(itemId) && colorItem.SizeId === Number(sizeId))) {
+            throw new Error('此顏色資料已存在！');
+        }
+        let productNumberCounter = 1
+        let productNumber = `ST${productNumberCounter.toString().padStart(10, '0')}`
+        
+        // 循环检查是否已经存在相同的productNumber
+        while (true) {
+            const existingColor = await Color.findOne({ where: { productNumber } })
+            
+            if (!existingColor) {
+                break; // 找到唯一的productNumber，退出循环
             }
-            cb(null, {
-                sttus: '已新增顏色！'
+            
+            // 如果已存在相同的productNumber，递增计数器并重新生成productNumber
+            productNumberCounter++
+            productNumber = `ST${productNumberCounter.toString().padStart(10, '0')}`
+        }
+         
+        const newColor = await Color.create({
+            productNumber: productNumber,
+            name: name,
+            ItemId: itemId,
+            itemStock: itemStock,
+            SizeId: sizeId,
+            state: 1
+        })
+
+            cb(null, {newColor,
+                status: '已新增類別！'
             })
         } catch (err) {
             cb(err)
+        }
+    },
+    getColors: async (req, cb) => {
+        try{
+            const colors = await Color.findAll({
+                attributes:['name', 'state']
+            })
+            cb(null, colors)
+        } catch(err) {
+             cb(err)
+        }
+    },
+    removeColor: async(req, cb) => {
+        try{
+            const { id } = req.params
+            const color = await Color.findOne({
+                where:{ id },
+                attributes:['id', 'name', 'state']
+            })
+            if (!color) throw new Error('尺寸不存在！')
+
+            await color.update({
+                state: 0
+            })
+            cb(null,{
+                status: '移除成功！'
+            } )
+        } catch(err) {
+             cb(err)
+        }
+    },
+    relistColor: async(req, cb) => {
+        try{
+            const { id } = req.params
+            const color = await Color.findOne({
+                where:{ id },
+                attributes:['id', 'name', 'state']
+            })
+            if (!color) throw new Error('尺寸不存在！')
+
+            await color.update({
+                state: 1
+            })
+            cb(null,{
+                status: '恢復成功！'
+            } )
+        } catch(err) {
+             cb(err)
+        }
+    },
+    delColor: async(req, cb) => {
+        try{
+            const { id } = req.params
+            const color = await Color.findByPk(id)
+            if (!color) throw new Error('種類不存在！')
+
+            await color.destroy()
+            cb(null,{
+                status: '刪除成功！'
+            } )
+        } catch(err) {
+             cb(err)
         }
     },
 
@@ -730,41 +855,7 @@ const adminServices = {
     
 
 
-    // delItem: async (req, cb) => {
-    //     try {
-    //         const id = req.params.id
-
-    //         // 筛选在Stock模型中符合req.params.id的ItemId的Stock.id
-    //         const stockIds = await Color.findAll({
-    //         where: { ItemId: id },
-    //         attributes: ['id'],
-    //         }).map(stock => stock.id)
-
-
-    //         // 删除Item模型中的所有记录
-    //         await Item.destroy({
-    //         where: { id: id },
-    //         })
-
-    //         // 删除Cart模型中与筛选出的StockId相匹配的记录
-    //         if (stockIds){
-    //             await Cart.destroy({
-    //             where: { ColorId: stockIds },
-    //             })
-    //         }
-            
-    //         //删除Color模型中与筛选出的StockId相匹配的记录
-    //         await Color.destroy({
-    //         where: { ItemId: id },
-    //         })
-
-    //         cb(null, {
-    //         status: '產品已刪除！',
-    //         })
-    //     } catch (err) {
-    //     cb(err)
-    //     }
-    // }
+    
 
 }
   

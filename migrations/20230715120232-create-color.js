@@ -18,6 +18,9 @@ module.exports = {
       itemStock: {
         type: Sequelize.INTEGER
       },
+      state: {
+        type: Sequelize.BOOLEAN
+      },
       SizeId: {
         type: Sequelize.INTEGER
       },
