@@ -518,14 +518,14 @@ const adminServices = {
     //顏色
     postColor: async (req, cb) => {
     try {
-        const { name, itemId, sizeId, itemStock } = req.body
+        const { name } = req.body
         
-        if (!name || !itemId || !sizeId || !itemStock) throw new Error('所有欄位皆為必填！')
+        if (!name) throw new Error('名稱為必填！')
         
         const colors = await Color.findAll()
 
        // 使用some方法检查是否存在匹配的颜色数据
-        if (colors.some(colorItem => colorItem.name === name && colorItem.ItemId === Number(itemId) && colorItem.SizeId === Number(sizeId))) {
+        if (colors.some(colorItem => colorItem.name === name )) {
             throw new Error('此顏色資料已存在！');
         }
         let productNumberCounter = 1
@@ -547,27 +547,30 @@ const adminServices = {
         const newColor = await Color.create({
             productNumber: productNumber,
             name: name,
-            ItemId: itemId,
-            itemStock: itemStock,
-            SizeId: sizeId,
             state: 1
         })
 
             cb(null, {newColor,
-                status: '已新增類別！'
+                status: '已新增顏色！'
             })
         } catch (err) {
             cb(err)
         }
     },
     getColors: async (req, cb) => {
-        try{
+        try {
             const colors = await Color.findAll({
-                attributes:['name', 'state']
-            })
-            cb(null, colors)
-        } catch(err) {
-             cb(err)
+                attributes: ['name'],
+                group: ['name'], // 使用GROUP BY確保獲取不同顏色
+                raw: true 
+            });
+
+            // 提取不同的颜色名稱提到uniqueColorNames
+            const uniqueColorNames = colors.map(color => color.name);
+
+            cb(null, uniqueColorNames);
+        } catch (err) {
+            cb(err);
         }
     },
     removeColor: async(req, cb) => {

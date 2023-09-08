@@ -85,44 +85,44 @@ const userServices = {
             const user = await User.findOne({
                 where: { id: helpers.getUser(req).id },
                 attributes: { exclude: ['password'] } // Exclude the 'password' field from the result
-            });
+            })
 
             if (!user) {
-                return cb(new Error('User not found'));
+                return cb(new Error('User not found'))
             }
 
             const userInfo = {
                 ...user.toJSON(),
                 createdAt: switchTime(user.createdAt),
                 updatedAt: switchTime(user.updatedAt)
-            };
+            }
 
-            cb(null, userInfo);
+            cb(null, userInfo)
         } catch (err) {
-            cb(err);
+            cb(err)
         }
     },
     putUser: async (req, cb) => {
-    const { name, account, email, password, sex, telNumber, introduction, checkPassword } = req.body;
-    const { file } = req;
+    const { name, account, email, password, sex, telNumber, introduction, checkPassword } = req.body
+    const { file } = req
 
-    if (!name) throw new Error('請填入名稱！');
-    if (password && password !== checkPassword) throw new Error('密碼與確認密碼不一致！');
-    if (name.length >= 50) throw new Error('名稱不可超過50字！');
-    if (introduction.length >= 160) throw new Error('自我介紹不可超過160字！');
+    if (!name) throw new Error('請填入名稱！')
+    if (password && password !== checkPassword) throw new Error('密碼與確認密碼不一致！')
+    if (name.length >= 20) throw new Error('名稱不可超過20字！')
+    if (introduction.length >= 160) throw new Error('自我介紹不可超過160字！')
 
     try {
         const user = await User.findOne({
             where: { id: helpers.getUser(req).id }
-        });
+        })
 
-        if (!user) throw new Error("使用者不存在！");
+        if (!user) throw new Error("使用者不存在！")
 
-        let hashedPassword = user.password; // Keep the existing password by default
+        let hashedPassword = user.password 
 
         if (password) {
-            const salt = bcrypt.genSaltSync(10);
-            hashedPassword = bcrypt.hashSync(password, salt);
+            const salt = bcrypt.genSaltSync(10)
+            hashedPassword = bcrypt.hashSync(password, salt)
         }
 
         const [updatedUser, filePath] = await Promise.all([
@@ -137,14 +137,14 @@ const userServices = {
                 avatar: file ? await localFileHandler(file) : user.avatar
             }),
             localFileHandler(file)
-        ]);
+        ])
 
-        const userData = updatedUser.toJSON();
-        delete userData.password;
+        const userData = updatedUser.toJSON()
+        delete userData.password
 
         cb(null, userData)
     } catch (err) {
-        throw err; // Handle the error at a higher level or return it as needed
+        throw err
     }
 },
     // orderInfo: async (req, cb) => {
@@ -218,7 +218,7 @@ const userServices = {
             // 計算訂單總價
             const total = carts.rows.reduce((total, cart) => {
                 return total += cart.amount
-            }, 0);
+            }, 0)
 
             // 建立訂單
             const order = await Order.create({
