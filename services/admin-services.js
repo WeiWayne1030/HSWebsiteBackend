@@ -566,8 +566,7 @@ const adminServices = {
             });
 
             // 提取不同的颜色名稱提到uniqueColorNames
-            const uniqueColorNames = colors.map(color => color.name);
-
+            const uniqueColorNames = colors.map(color => ({ color: color.name }))
             cb(null, uniqueColorNames);
         } catch (err) {
             cb(err);
