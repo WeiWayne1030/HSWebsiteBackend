@@ -123,9 +123,9 @@ router.get('/api/admin/sizes', authenticated, authenticatedAdmin, adminControlle
 ////修改商品尺寸
 router.put('/api/admin/size', authenticated, authenticatedAdmin, adminController.putSize)
 ////取消商品尺寸
-router.post('/api/admin/sizeremove', authenticated, authenticatedAdmin, adminController.removeSize)
+router.post('/api/admin/size/remove', authenticated, authenticatedAdmin, adminController.removeSize)
 ////恢復商品尺寸
-router.post('/api/admin/sizerelist', authenticated, authenticatedAdmin, adminController.relistSize)
+router.post('/api/admin/size/relist', authenticated, authenticatedAdmin, adminController.relistSize)
 ////刪除商品尺寸
 router.delete('/api/admin/size', authenticated, authenticatedAdmin, adminController.delSize)
 
