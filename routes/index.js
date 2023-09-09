@@ -79,7 +79,7 @@ router.post('/api/admin/category', authenticated, authenticatedAdmin, adminContr
 ////查詢商品分類
 router.get('/api/admin/categories', authenticated, authenticatedAdmin, adminController.getCategories)
 ////修改商品分類
-router.put('/api/admin/categories/:id', authenticated, authenticatedAdmin, adminController.putCategory)
+router.put('/api/admin/category', authenticated, authenticatedAdmin, adminController.putCategory)
 ////取消商品分類
 router.post('/api/admin/categories/:id/remove', authenticated, authenticatedAdmin, adminController.removeCategory)
 ////恢復商品分類

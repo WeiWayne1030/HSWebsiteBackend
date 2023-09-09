@@ -7,7 +7,7 @@ module.exports = {
         .map(item => {
           return {
             name: item,
-            state: 1,
+            state: true,
             createdAt: new Date(),
             updatedAt: new Date()
           }

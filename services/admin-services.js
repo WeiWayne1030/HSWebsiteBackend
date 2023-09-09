@@ -440,8 +440,7 @@ const adminServices = {
     },
     putCategory: async (req, cb) => {
         try{
-            const { id } = req.params
-            const { name } = req.body
+            const { name,id } = req.body
             const category = await Category.findOne({
                 where:{ id },
                 attributes:['id', 'name', 'state']
