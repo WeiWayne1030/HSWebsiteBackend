@@ -70,12 +70,12 @@ const adminController = {
   getColors: (req, res, next) => {
     adminServices.getColors(req, (err, data) => err ? next(err) : res.status(200).json(data))
   },
-  removeColor: (req, res, next) => {
-    adminServices.removeColor(req, (err, data) => err ? next(err) : res.status(200).json(data))
-  },
-  relistColor: (req, res, next) => {
-    adminServices.relistColor(req, (err, data) => err ? next(err) : res.status(200).json(data))
-  },
+  // removeColor: (req, res, next) => {
+  //   adminServices.removeColor(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  // },
+  // relistColor: (req, res, next) => {
+  //   adminServices.relistColor(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  // },
   delColor: (req, res, next) => {
     adminServices.delColor(req, (err, data) => err ? next(err) : res.status(200).json(data))
   },

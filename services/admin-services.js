@@ -571,44 +571,44 @@ const adminServices = {
             cb(err);
         }
     },
-    removeColor: async(req, cb) => {
-        try{
-            const { id } = req.params
-            const color = await Color.findOne({
-                where:{ id },
-                attributes:['id', 'name', 'state']
-            })
-            if (!color) throw new Error('尺寸不存在！')
+    // removeColor: async(req, cb) => {
+    //     try{
+    //         const { id } = req.params
+    //         const color = await Color.findOne({
+    //             where:{ id },
+    //             attributes:['id', 'name', 'state']
+    //         })
+    //         if (!color) throw new Error('尺寸不存在！')
 
-            await color.update({
-                state: 0
-            })
-            cb(null,{
-                status: '移除成功！'
-            } )
-        } catch(err) {
-             cb(err)
-        }
-    },
-    relistColor: async(req, cb) => {
-        try{
-            const { id } = req.params
-            const color = await Color.findOne({
-                where:{ id },
-                attributes:['id', 'name', 'state']
-            })
-            if (!color) throw new Error('尺寸不存在！')
+    //         await color.update({
+    //             state: 0
+    //         })
+    //         cb(null,{
+    //             status: '移除成功！'
+    //         } )
+    //     } catch(err) {
+    //          cb(err)
+    //     }
+    // },
+    // relistColor: async(req, cb) => {
+    //     try{
+    //         const { id } = req.params
+    //         const color = await Color.findOne({
+    //             where:{ id },
+    //             attributes:['id', 'name', 'state']
+    //         })
+    //         if (!color) throw new Error('尺寸不存在！')
 
-            await color.update({
-                state: 1
-            })
-            cb(null,{
-                status: '恢復成功！'
-            } )
-        } catch(err) {
-             cb(err)
-        }
-    },
+    //         await color.update({
+    //             state: 1
+    //         })
+    //         cb(null,{
+    //             status: '恢復成功！'
+    //         } )
+    //     } catch(err) {
+    //          cb(err)
+    //     }
+    // },
     delColor: async(req, cb) => {
         try{
             const { id } = req.params
@@ -665,8 +665,7 @@ const adminServices = {
     },
     putSize: async (req, cb) => {
         try{
-            const { id } = req.params
-            const { name } = req.body
+            const { id, name } = req.body
             const size = await Size.findOne({
                 where:{ id },
                 attributes:['id', 'name', 'state']
@@ -688,7 +687,7 @@ const adminServices = {
     },
     removeSize: async(req, cb) => {
         try{
-            const { id } = req.params
+            const { id } = req.body
             const size = await Size.findOne({
                 where:{ id },
                 attributes:['id', 'name', 'state']
@@ -707,7 +706,7 @@ const adminServices = {
     },
     relistSize: async(req, cb) => {
         try{
-            const { id } = req.params
+            const { id } = req.body
             const size = await Size.findOne({
                 where:{ id },
                 attributes:['id', 'name', 'state']
@@ -726,7 +725,7 @@ const adminServices = {
     },
     delSize: async(req, cb) => {
         try{
-            const { id } = req.params
+            const { id } = req.body
             const size = await Size.findByPk(id)
             if (!size) throw new Error('種類不存在！')
 
@@ -780,8 +779,7 @@ const adminServices = {
     },
     putMethod: async (req, cb) => {
         try{
-            const { id } = req.params
-            const { name } = req.body
+            const { id, name } = req.body
             const method = await Method.findOne({
                 where:{ id },
                 attributes:['id', 'name', 'state']
@@ -803,7 +801,7 @@ const adminServices = {
     },
     removeMethod: async(req, cb) => {
         try{
-            const { id } = req.params
+            const { id } = req.body
             const method = await Method.findOne({
                 where:{ id },
                 attributes:['id', 'name', 'state']
@@ -822,7 +820,7 @@ const adminServices = {
     },
     relistMethod: async(req, cb) => {
         try{
-            const { id } = req.params
+            const { id } = req.body
             const method = await Method.findOne({
                 where:{ id },
                 attributes:['id', 'name', 'state']
@@ -841,7 +839,7 @@ const adminServices = {
     },
     delMethod: async(req, cb) => {
         try{
-            const { id } = req.params
+            const { id } = req.body
             const method = await Method.findByPk(id)
             if (!method) throw new Error('種類不存在！')
 
