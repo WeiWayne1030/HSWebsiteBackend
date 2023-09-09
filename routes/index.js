@@ -93,13 +93,13 @@ router.post('/api/admin/method', authenticated, authenticatedAdmin, adminControl
 ////查詢付款方式
 router.get('/api/admin/methods', authenticated, authenticatedAdmin, adminController.getMethods)
 ////修改付款方式
-router.put('/api/admin/methods', authenticated, authenticatedAdmin, adminController.putMethod)
+router.put('/api/admin/method', authenticated, authenticatedAdmin, adminController.putMethod)
 ////取消付款方式
-router.post('/api/admin/methods/remove', authenticated, authenticatedAdmin, adminController.removeMethod)
+router.post('/api/admin/method/remove', authenticated, authenticatedAdmin, adminController.removeMethod)
 ////恢復付款方式
-router.post('/api/admin/methods/relist', authenticated, authenticatedAdmin, adminController.relistMethod)
+router.post('/api/admin/method/relist', authenticated, authenticatedAdmin, adminController.relistMethod)
 ////刪除付款方式
-router.delete('/api/admin/methods', authenticated, authenticatedAdmin, adminController.delMethod)
+router.delete('/api/admin/method', authenticated, authenticatedAdmin, adminController.delMethod)
 
 
 //顏色
@@ -112,7 +112,7 @@ router.get('/api/admin/colors', authenticated, authenticatedAdmin, adminControll
 // ////恢復商品顏色
 // router.post('/api/admin/colors/relist', authenticated, authenticatedAdmin, adminController.relistColor)
 ////刪除商品顏色
-router.delete('/api/admin/colors', authenticated, authenticatedAdmin, adminController.delColor)
+router.delete('/api/admin/color', authenticated, authenticatedAdmin, adminController.delColor)
 
 
 //尺寸
