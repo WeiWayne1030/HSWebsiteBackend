@@ -68,8 +68,8 @@ router.get('/api/admin/items', authenticated, authenticatedAdmin, adminControlle
 //admin order
 // //取得所有訂單資料
 router.get('/api/admin/orders', authenticated, authenticatedAdmin, adminController.getOrders)
-// //取得單筆訂單資料
-// router.get('/api/admin/orderInfos/:id', authenticated, authenticatedAdmin, adminController.slGetOrderInfo)
+//取得單筆訂單項目資料
+router.get('/api/admin/orderItems/:orderNumber', authenticated, authenticatedAdmin, adminController.getOrderItems)
 
 
 // //admin etc

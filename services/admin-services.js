@@ -325,78 +325,85 @@ const adminServices = {
         cb(err)
     }
     },
-    // slGetOrderInfo: async (req, cb) => {
-    //     try {
-    //         const id = req.params.id
-    //         if (!id) {
-    //             throw new Error('此訂單不存在！')
-    //         }
-    //         const orderInfo = await OrderInfo.findOne({
-    //             id,
-    //             include: [{
-    //                     model: Method   
-    //         }],
+    getOrderItems: async (req, cb) => {
+    try {
+        const orderNumber = req.params.orderNumber
+        if (!orderNumber) {
+            throw new Error('此訂單不存在！')
+        }
 
-    //             order: [['createdAt', 'DESC']] 
-    //         })
-    //         if (!orderInfo) {
-    //             throw new Error('找不到對應的訂單！')
-    //         }
-    //         cb(null, orderInfo)
-    //     } catch (err) {
-    //         cb(err)
-    //     }
-    // },
-    // putStock: async (req, cb) => {
-    //     try {
-    //         const id = req.params.id
-    //         const { name, price, description, CategoryId, itemStock, ColorId, SizeId } = req.body
-    //         if (!name || !price || !description || !itemStock || !ColorId || !SizeId || !CategoryId) {
-    //             throw new Error('所有欄位不得為空!')
-    //         }
+        const orderItems = await Cart.findAll({
+            where: { orderNumber }, // Use an object to specify the condition
+            include: [{
+                model: Color,
+                include: [{
+                    model: Item
+                },
+                {
+                    model: Size
+                }]
+            }]
+        })
 
-    //         // Find the stock record with the provided ID
-    //         const stock = await Stock.findOne({
-    //             where: { id: id },
-    //             include: [{
-    //                 model: Item
-    //             }]
-    //         })
+        if (!orderItems || orderItems.length === 0) { // Check if orderItems is an empty array
+            throw new Error('找不到對應的訂單！')
+        }
 
-    //         // Check if a valid stock record is found
-    //         if (!stock) {
-    //             throw new Error('找不到該庫存記錄!')
-    //         }
+        cb(null, orderItems)
+    } catch (err) {
+        cb(err)
+    }
+},
+    putStock: async (req, cb) => {
+        try {
+            const id = req.params.id
+            const { name, price, description, CategoryId, itemStock, ColorId, SizeId } = req.body
+            if (!name || !price || !description || !itemStock || !ColorId || !SizeId || !CategoryId) {
+                throw new Error('所有欄位不得為空!')
+            }
 
-    //         // Find the associated item
-    //         const item = stock.Item
+            // Find the stock record with the provided ID
+            const stock = await Stock.findOne({
+                where: { id: id },
+                include: [{
+                    model: Item
+                }]
+            })
 
-    //         const { file } = req
-    //         const filePath = await localFileHandler(file)
+            // Check if a valid stock record is found
+            if (!stock) {
+                throw new Error('找不到該庫存記錄!')
+            }
 
-    //         // Update the item details
-    //         await item.update({
-    //             name,
-    //             price,
-    //             description,
-    //             image: filePath || null,
-    //             CategoryId
-    //         })
+            // Find the associated item
+            const item = stock.Item
 
-    //         // Update the stock details
-    //         await stock.update({
-    //             itemStock,
-    //             ColorId,
-    //             SizeId
-    //         })
+            const { file } = req
+            const filePath = await localFileHandler(file)
 
-    //         cb(null, {
-    //             status: '已更新庫存！'
-    //         })
-    //     } catch (err) {
-    //         cb(err)
-    //     }
-    // },
+            // Update the item details
+            await item.update({
+                name,
+                price,
+                description,
+                image: filePath || null,
+                CategoryId
+            })
+
+            // Update the stock details
+            await stock.update({
+                itemStock,
+                ColorId,
+                SizeId
+            })
+
+            cb(null, {
+                status: '已更新庫存！'
+            })
+        } catch (err) {
+            cb(err)
+        }
+    },
 
 
     //種類
@@ -525,7 +532,7 @@ const adminServices = {
 
        // 使用some方法检查是否存在匹配的颜色数据
         if (colors.some(colorItem => colorItem.name === name )) {
-            throw new Error('此顏色資料已存在！');
+            throw new Error('此顏色資料已存在！')
         }
         let productNumberCounter = 1
         let productNumber = `ST${productNumberCounter.toString().padStart(10, '0')}`
@@ -535,10 +542,10 @@ const adminServices = {
             const existingColor = await Color.findOne({ where: { productNumber } })
             
             if (!existingColor) {
-                break; // 找到唯一的productNumber，退出循环
+                break // 找到唯一的productNumber，退出循環
             }
             
-            // 如果已存在相同的productNumber，递增计数器并重新生成productNumber
+            // 如果已存在相同的productNumber，遞增增计数器並重新生成productNumber
             productNumberCounter++
             productNumber = `ST${productNumberCounter.toString().padStart(10, '0')}`
         }
@@ -562,13 +569,13 @@ const adminServices = {
                 attributes: ['name'],
                 group: ['name'], // 使用GROUP BY確保獲取不同顏色
                 raw: true 
-            });
+            })
 
             // 提取不同的颜色名稱提到uniqueColorNames
             const uniqueColorNames = colors.map(color => ({ color: color.name }))
-            cb(null, uniqueColorNames);
+            cb(null, uniqueColorNames)
         } catch (err) {
-            cb(err);
+            cb(err)
         }
     },
     // removeColor: async(req, cb) => {

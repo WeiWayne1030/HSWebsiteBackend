@@ -39,9 +39,9 @@ const adminController = {
   getOrders: (req, res, next) => {
     adminServices.getOrders(req, (err, data) => err ? next(err) : res.status(200).json(data))
   },
-  // getOrderInfo: (req, res, next) => {
-  //   adminServices.getOrderInfo(req, (err, data) => err ? next(err) : res.status(200).json(data))
-  // },
+  getOrderItems: (req, res, next) => {
+    adminServices.getOrderItems(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
 
   //種類
   postCategory: (req, res, next) => {
