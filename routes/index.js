@@ -81,11 +81,11 @@ router.get('/api/admin/categories', authenticated, authenticatedAdmin, adminCont
 ////修改商品分類
 router.put('/api/admin/category', authenticated, authenticatedAdmin, adminController.putCategory)
 ////取消商品分類
-router.post('/api/admin/categories/:id/remove', authenticated, authenticatedAdmin, adminController.removeCategory)
+router.post('/api/admin/category/remove', authenticated, authenticatedAdmin, adminController.removeCategory)
 ////恢復商品分類
-router.post('/api/admin/categories/:id/relist', authenticated, authenticatedAdmin, adminController.relistCategory)
+router.post('/api/admin/category/relist', authenticated, authenticatedAdmin, adminController.relistCategory)
 ////刪除商品類別
-router.delete('/api/admin/categories/:id', authenticated, authenticatedAdmin, adminController.delCategory)
+router.delete('/api/admin/category', authenticated, authenticatedAdmin, adminController.delCategory)
 
 //付款方式
 ////新增付款方式

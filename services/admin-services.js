@@ -462,7 +462,7 @@ const adminServices = {
     },
     removeCategory: async(req, cb) => {
         try{
-            const { id } = req.params
+            const { id } = req.body
             const category = await Category.findOne({
                 where:{ id },
                 attributes:['id', 'name', 'state']
@@ -481,7 +481,7 @@ const adminServices = {
     },
     relistCategory: async(req, cb) => {
         try{
-            const { id } = req.params
+            const { id } = req.body
             const category = await Category.findOne({
                 where:{ id },
                 attributes:['id', 'name', 'state']
@@ -500,7 +500,7 @@ const adminServices = {
     },
     delCategory: async(req, cb) => {
         try{
-            const { id } = req.params
+            const { id } = req.body
             const category = await Category.findByPk(id)
             if (!category) throw new Error('種類不存在！')
 
