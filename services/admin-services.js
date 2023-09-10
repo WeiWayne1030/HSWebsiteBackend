@@ -180,8 +180,8 @@ const adminServices = {
     },
     postItem: async (req, cb) => {
         try {
-            const { name, price, description, CategoryId } = req.body
-            if (!name || !price || !description || !CategoryId ) {
+            const { name, price, description, CategoryId, Color, SizeId, itemStock } = req.body
+            if (!name || !price || !description || !CategoryId || !Color || !SizeId || !itemStock ) {
                 throw new Error('所有欄位不得為空!')
             }
             const item = await Item.findOne({
@@ -201,8 +201,9 @@ const adminServices = {
                 image: filePath || null,
                 CategoryId
             })
+
             cb(null, {
-                status: '已新增品項！'
+                status: '新增成功！'
             })
         } catch (err) {
             cb(err)
@@ -288,42 +289,42 @@ const adminServices = {
     //     }
     // },
     getOrders: async (req, cb) => {
-    try {
-        const DEFAULT_LIMIT = 9
-        const MethodId = Number(req.query.MethodId) || ''
-        const state = req.query.state || ""
-        const orderNumber = req.query.orderNumber || ""
-        const page = Number(req.query.page) || 1
-        const limit = Number(req.query.limit) || DEFAULT_LIMIT
-        const offset = getOffset(limit, page)
-        const [orders, methods] = await Promise.all([
-            Order.findAndCountAll({
-                include: [
-                    {
-                        model: Method,
-                        where: MethodId ? { MethodId } : {},
-                    }
-                ],
-                limit,
-                offset
-            }),
-            Method.findAll({ raw: true })
-        ])
+        try {
+            const DEFAULT_LIMIT = 9
+            const MethodId = Number(req.query.MethodId) || ''
+            const state = req.query.state || ""
+            const orderNumber = req.query.orderNumber || ""
+            const page = Number(req.query.page) || 1
+            const limit = Number(req.query.limit) || DEFAULT_LIMIT
+            const offset = getOffset(limit, page)
+            const [orders, methods] = await Promise.all([
+                Order.findAndCountAll({
+                    include: [
+                        {
+                            model: Method,
+                            where: MethodId ? { MethodId } : {},
+                        }
+                    ],
+                    limit,
+                    offset
+                }),
+                Method.findAll({ raw: true })
+            ])
 
-        const orderInfos = orders.rows.map(order => {
-            return {
-                ...order.dataValues, 
-                createdAt: switchTime(order.createdAt),
-                updatedAt: switchTime(order.updatedAt)
-            }
-        })
+            const orderInfos = orders.rows.map(order => {
+                return {
+                    ...order.dataValues, 
+                    createdAt: switchTime(order.createdAt),
+                    updatedAt: switchTime(order.updatedAt)
+                }
+            })
 
-        const pagination = getPagination(limit, page, orders.count)
+            const pagination = getPagination(limit, page, orders.count)
 
-        cb(null, { orderInfos, methods, MethodId, pagination, state, orderNumber })
-    } catch (err) {
-        cb(err)
-    }
+            cb(null, { orderInfos, methods, MethodId, pagination, state, orderNumber })
+        } catch (err) {
+            cb(err)
+        }
     },
     getOrderItems: async (req, cb) => {
     try {
@@ -333,7 +334,7 @@ const adminServices = {
         }
 
         const orderItems = await Cart.findAll({
-            where: { orderNumber }, // Use an object to specify the condition
+            where: { orderNumber },
             include: [{
                 model: Color,
                 include: [{
@@ -345,7 +346,7 @@ const adminServices = {
             }]
         })
 
-        if (!orderItems || orderItems.length === 0) { // Check if orderItems is an empty array
+        if (!orderItems || orderItems.length === 0) { 
             throw new Error('找不到對應的訂單！')
         }
 
@@ -363,7 +364,7 @@ const adminServices = {
             }
 
             // Find the stock record with the provided ID
-            const stock = await Stock.findOne({
+            const stock = await Order.findOne({
                 where: { id: id },
                 include: [{
                     model: Item
@@ -618,11 +619,13 @@ const adminServices = {
     // },
     delColor: async(req, cb) => {
         try{
-            const { id } = req.params
-            const color = await Color.findByPk(id)
-            if (!color) throw new Error('種類不存在！')
-
-            await color.destroy()
+            const { name } = req.body
+            const color = Color.findAll({
+            })
+            if (!color) throw new Error('顏色不存在！')
+            await Color.destroy({
+                where: { name: name }
+            });
             cb(null,{
                 status: '刪除成功！'
             } )
@@ -734,7 +737,7 @@ const adminServices = {
         try{
             const { id } = req.body
             const size = await Size.findByPk(id)
-            if (!size) throw new Error('種類不存在！')
+            if (!size) throw new Error('尺寸不存在！')
 
             await size.destroy()
             cb(null,{
@@ -848,7 +851,7 @@ const adminServices = {
         try{
             const { id } = req.body
             const method = await Method.findByPk(id)
-            if (!method) throw new Error('種類不存在！')
+            if (!method) throw new Error('支付方式不存在！')
 
             await method.destroy()
             cb(null,{
