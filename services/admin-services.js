@@ -41,6 +41,8 @@ const adminServices = {
             cb(err)
         }
     },
+
+    //商品
     getItems: async (req, cb) => {
         const categoryId = Number(req.query.CategoryId) || ""
         const stateParam = req.query.state || ""
@@ -70,59 +72,6 @@ const adminServices = {
                 categories,
                 categoryId,
                 stateParam,
-            })
-        } catch (err) {
-            cb(err)
-        }
-    },
-    getStocks: async (req, cb) => {
-        const categoryId = Number(req.query.CategoryId) || ""
-        const stateParam = req.query.state || ""
-        const productNumberParam = req.query.productNumber || ""
-
-        try {
-            const [colors, items, categories] = await Promise.all([
-                Color.findAll({
-                    where: productNumberParam !== "" ? { productNumber: productNumberParam } : {},
-                    include: [
-                        {
-                            model: Size
-                        },
-                        {
-                            model: Item,
-                            where: [stateParam !== "" ? { state: stateParam } : {}],
-                            include: {
-                                model: Category,
-                                where: categoryId !== "" ? { id: categoryId } : {},
-                            },
-                            nest: true,
-                            raw: true,
-                        }
-                    ],
-                    nest: true,
-                    raw: true,
-                }),
-                Item.findAll({
-                    model: Category
-                }),
-                Category.findAll({ raw: true }),
-            ])
-            
-
-            stocksInfo = await colors.map(color => {
-                return {...color,
-                    createdAt: switchTime(color.createdAt),
-                    updatedAt: switchTime(color.updatedAt)
-                }
-            })
-
-            cb(null, {
-                stocksInfo,
-                items,
-                categories,
-                categoryId,
-                stateParam,
-                productNumberParam
             })
         } catch (err) {
             cb(err)
@@ -244,50 +193,8 @@ const adminServices = {
     //     cb(err)
     //     }
     // },
-
-
-
-
-    // postStock: async (req, cb) => {
-    //     try {
-    //         const id = req.params.stockId
-    //         const { itemStock, ColorId, SizeId } = req.body
-    //         if (!itemStock || !ColorId || !SizeId) {
-    //             throw new Error('所有欄位不得為空!')
-    //         }
-    //         if (!id) {
-    //             throw new Error('此商品不存在！')
-    //         }
-    //         const item = await Item.findOne({
-    //             where: { id }
-    //         })
-    //         if (!item) {
-    //             throw new Error('找不到對應的商品！')
-    //         }
-    //         const stock = await Stock.findOne({
-    //             where: { ItemId: id, ColorId, SizeId }
-    //         })
-    //         if (stock) {
-    //             throw new Error('此商品庫存已存在！')
-    //         }
-    //         if (itemStock < 0) {
-    //             throw new Error('庫存不得小於0！')
-    //         }
-    //         await Stock.create({
-    //             productNumber: `ST${Date.now().toString().padStart(10, '0')}`,
-    //             itemStock,
-    //             ColorId,
-    //             SizeId,
-    //             ItemId: id
-    //         })
-    //         cb(null, {
-    //             status: '已新增庫存！'
-    //         })
-    //     } catch (err) {
-    //         console.error(err)
-    //         cb(err)
-    //     }
-    // },
+    
+    //訂單
     getOrders: async (req, cb) => {
         try {
             const DEFAULT_LIMIT = 9
@@ -354,58 +261,131 @@ const adminServices = {
     } catch (err) {
         cb(err)
     }
-},
-    putStock: async (req, cb) => {
+    },
+    // putStock: async (req, cb) => {
+    //     try {
+    //         const id = req.params.id
+    //         const { name, price, description, CategoryId, itemStock, ColorId, SizeId } = req.body
+    //         if (!name || !price || !description || !itemStock || !ColorId || !SizeId || !CategoryId) {
+    //             throw new Error('所有欄位不得為空!')
+    //         }
+
+    //         // Find the stock record with the provided ID
+    //         const stock = await Order.findOne({
+    //             where: { id: id },
+    //             include: [{
+    //                 model: Item
+    //             }]
+    //         })
+
+    //         // Check if a valid stock record is found
+    //         if (!stock) {
+    //             throw new Error('找不到該庫存記錄!')
+    //         }
+
+    //         // Find the associated item
+    //         const item = stock.Item
+
+    //         const { file } = req
+    //         const filePath = await localFileHandler(file)
+
+    //         // Update the item details
+    //         await item.update({
+    //             name,
+    //             price,
+    //             description,
+    //             image: filePath || null,
+    //             CategoryId
+    //         })
+
+    //         // Update the stock details
+    //         await stock.update({
+    //             itemStock,
+    //             ColorId,
+    //             SizeId
+    //         })
+
+    //         cb(null, {
+    //             status: '已更新庫存！'
+    //         })
+    //     } catch (err) {
+    //         cb(err)
+    //     }
+    // },
+    
+    //庫存
+    getStocks: async (req, cb) => {
+        const categoryId = Number(req.query.CategoryId) || ""
+        const stateParam = req.query.state || ""
+        const productNumberParam = req.query.productNumber || ""
+
         try {
-            const id = req.params.id
-            const { name, price, description, CategoryId, itemStock, ColorId, SizeId } = req.body
-            if (!name || !price || !description || !itemStock || !ColorId || !SizeId || !CategoryId) {
-                throw new Error('所有欄位不得為空!')
-            }
+            const [colors, items, categories] = await Promise.all([
+                Color.findAll({
+                    where: productNumberParam !== "" ? { productNumber: productNumberParam } : {},
+                    include: [
+                        {
+                            model: Size
+                        },
+                        {
+                            model: Item,
+                            where: [stateParam !== "" ? { state: stateParam } : {}],
+                            include: {
+                                model: Category,
+                                where: categoryId !== "" ? { id: categoryId } : {},
+                            },
+                            nest: true,
+                            raw: true,
+                        }
+                    ],
+                    nest: true,
+                    raw: true,
+                }),
+                Item.findAll({
+                    model: Category
+                }),
+                Category.findAll({ raw: true }),
+            ])
+            
 
-            // Find the stock record with the provided ID
-            const stock = await Order.findOne({
-                where: { id: id },
-                include: [{
-                    model: Item
-                }]
-            })
-
-            // Check if a valid stock record is found
-            if (!stock) {
-                throw new Error('找不到該庫存記錄!')
-            }
-
-            // Find the associated item
-            const item = stock.Item
-
-            const { file } = req
-            const filePath = await localFileHandler(file)
-
-            // Update the item details
-            await item.update({
-                name,
-                price,
-                description,
-                image: filePath || null,
-                CategoryId
-            })
-
-            // Update the stock details
-            await stock.update({
-                itemStock,
-                ColorId,
-                SizeId
+            stocksInfo = await colors.map(color => {
+                return {...color,
+                    createdAt: switchTime(color.createdAt),
+                    updatedAt: switchTime(color.updatedAt)
+                }
             })
 
             cb(null, {
-                status: '已更新庫存！'
+                stocksInfo,
+                items,
+                categories,
+                categoryId,
+                stateParam,
+                productNumberParam
             })
         } catch (err) {
             cb(err)
         }
     },
+    putStockNumber: async (req, cb) => {
+        try {
+            const { productNumber, itemStock } =  req.body
+            const stock = await Color.findOne ({
+                where: {productNumber: productNumber} 
+            })
+            if (!stock) throw new Error('商品不存在！')
+            if (!itemStock) throw new Error('請輸入數量！')
 
+            await stock.update({
+                itemStock:itemStock
+            })
+            cb(null,{
+                status: '修改成功！'
+            } ) 
+        } catch(err) {
+            cb(err)
+        }
+    },
 
     //種類
     postCategory: async (req, cb) => {

@@ -41,27 +41,27 @@ router.post('/api/orders', authenticated, authenticatedUser, userController.buil
 router.get('/api/orders', authenticated, authenticatedUser, userController.getOrders)
 
 //admin（庫存管理）
-//下架商品
+
+//商品
+////下架商品
 router.post('/api/admin/items/:id/remove', authenticated, authenticatedAdmin, adminController.removeItem);
-//重新上架商品
+////重新上架商品
 router.post('/api/admin/items/:id/relist', authenticated, authenticatedAdmin, adminController.relistItem);
-//新增商品
+////新增商品
 router.post('/api/admin/items',upload.single('image'), authenticated, authenticatedAdmin, adminController.postItem)
+////檢視所有商品（上架下架）
+router.get('/api/admin/items', authenticated, authenticatedAdmin, adminController.getItems)
 
 // //刪除商品庫存(為確保已生成訂單的紀錄，所以暫不使用此功能)
 // router.delete('/api/admin/items/:id', authenticated, authenticatedAdmin, adminController.delItem)
 
 
-
-// //新增商品庫存
-// router.post('/api/admin/items/:stockId', authenticated, authenticatedAdmin, adminController.postStock)
-// //修改商品庫存
-// router.put('/api/admin/stock/:id',upload.single('image'), authenticated, authenticatedAdmin, adminController.putStock)
-//檢視所有庫存
+//庫存
+////檢視所有庫存
 router.get('/api/admin/stocks', authenticated, authenticatedAdmin, adminController.getStocks)
-//檢視所有商品（上架下架）
-router.get('/api/admin/items', authenticated, authenticatedAdmin, adminController.getItems)
 
+////修改庫存數量
+router.put('/api/admin/itemStock', authenticated, authenticatedAdmin, adminController.putStockNumber)
 
 
 

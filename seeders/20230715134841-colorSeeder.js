@@ -32,7 +32,7 @@ module.exports = {
       }
 
       for (let i = 0; i < 30; i++) {
-        const productNumber = `ST${productNumberCounter.toString().padStart(10, '0')}`
+        const productNumber = `ST${productNumberCounter.toString().padStart(6, '0')}`
         productNumberCounter++ // Increment the counter
         const colorName = colorNames[Math.floor(Math.random() * colorNames.length)]
         const availableSizes = sizes.filter(size => !itemColorSizeIds.has(`${colorName}-${size.id}`))
