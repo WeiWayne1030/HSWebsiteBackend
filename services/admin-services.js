@@ -386,6 +386,63 @@ const adminServices = {
             cb(err)
         }
     },
+    addStock: async (req, cb) => {
+        try {
+        const {ItemId, colorName , SizeId, itemStock } = req.body
+        const stocks = await Color.findAll({
+                include: Item
+            },
+            {
+                include:Size    
+            })
+        // 設定一個變數顯示庫存已存在
+        let stockExists = false
+
+
+        //檢查匹配的庫存
+        for (const stock of stocks) {
+            console.log('商品',stock.ItemId)
+            if (stock.ItemId === Number(ItemId) && stock.name === colorName && stock.SizeId === Number(SizeId)) {
+                stockExists = true
+                break
+            }
+        }
+
+        if (stockExists) {
+            throw new Error('庫存已存在!')
+        }
+
+        let productNumberCounter = 1
+        let productNumber = `ST${productNumberCounter.toString().padStart(6, '0')}`
+        
+        // 循环检查是否已经存在相同的productNumber
+        while (true) {
+            const existingColor = await Color.findOne({ where: { productNumber } })
+            
+            if (!existingColor) {
+                break // 找到唯一的productNumber，退出循環
+            }
+            
+            // 如果已存在相同的productNumber，遞增增计数器並重新生成productNumber
+            productNumberCounter++
+            productNumber = `ST${productNumberCounter.toString().padStart(6, '0')}`
+        }
+
+         const newStock = await Color.create({
+            productNumber,
+            ItemId,
+            state: 1,
+            name: colorName,
+            SizeId,
+            itemStock
+        })
+            cb(null, {newStock,
+                    status: '已新增類別！'
+                })
+            } catch (err) {
+                cb(err)
+            }
+    },
 
     //種類
     postCategory: async (req, cb) => {
@@ -516,7 +573,7 @@ const adminServices = {
             throw new Error('此顏色資料已存在！')
         }
         let productNumberCounter = 1
-        let productNumber = `ST${productNumberCounter.toString().padStart(10, '0')}`
+        let productNumber = `ST${productNumberCounter.toString().padStart(6, '0')}`
         
         // 循环检查是否已经存在相同的productNumber
         while (true) {
@@ -528,7 +585,7 @@ const adminServices = {
             
             // 如果已存在相同的productNumber，遞增增计数器並重新生成productNumber
             productNumberCounter++
-            productNumber = `ST${productNumberCounter.toString().padStart(10, '0')}`
+            productNumber = `ST${productNumberCounter.toString().padStart(6, '0')}`
         }
          
         const newColor = await Color.create({
@@ -670,7 +727,7 @@ const adminServices = {
             })
             cb(null,{
                 status: '修改成功！'
-            } )
+            })
         } catch(err) {
              cb(err)
         }

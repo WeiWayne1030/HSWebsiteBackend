@@ -34,9 +34,11 @@ const adminController = {
   // putStock: (req, res, next) => {
   //   adminServices.putStock(req, (err, data) => err ? next(err) : res.status(200).json(data))
   // },
-
   putStockNumber: (req, res, next) => {
     adminServices.putStockNumber(req, (err, data) => err ? next(err) : res.status(200).json(data))
+  },
+  addStock: (req, res, next) => {
+    adminServices.addStock(req, (err, data) => err ? next(err) : res.status(200).json(data))
   },
 
   //訂單
