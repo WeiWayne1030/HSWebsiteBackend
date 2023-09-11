@@ -61,7 +61,7 @@ router.get('/api/admin/items', authenticated, authenticatedAdmin, adminControlle
 router.get('/api/admin/stocks', authenticated, authenticatedAdmin, adminController.getStocks)
 
 ////修改庫存數量
-router.patch('/api/admin/itemStock', authenticated, authenticatedAdmin, adminController.putStockNumber)
+router.put('/api/admin/itemStock', authenticated, authenticatedAdmin, adminController.putStockNumber)
 ////新增商品庫存
 router.post('/api/admin/stock', authenticated, authenticatedAdmin, adminController.addStock)
 
