@@ -118,9 +118,9 @@ const userServices = {
         const allUsers = Promise.all([
             User.findAll({
                 raw: true,
-                where: { id: { [Op.ne]: id } } // 找出除了使用者本人以外的所有使用者
+                where: { id: { [Op.ne]: helpers.getUser(req).id } } // 找出除了使用者本人以外的所有使用者
             }),
-            User.findByPk(id),
+            User.findByPk(helpers.getUser(req).id),
             imgurFileHandler(file)
         ])
 

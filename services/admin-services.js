@@ -1,4 +1,4 @@
-const { localFileHandler } = require('../helpers/imgurFileHandler')
+const { imgurFileHandler } = require('../helpers/imgurFileHandler')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt-nodejs')
 const { switchTime } = require('../helpers/dayjs-helpers')
@@ -141,7 +141,7 @@ const adminServices = {
             }
             const { file } = req
             
-            const filePath = await localFileHandler(file)
+            const filePath = await imgurFileHandler(file)
             await Item.create({
                 name,
                 state: 1,
