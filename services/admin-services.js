@@ -162,26 +162,24 @@ const adminServices = {
     //     try {
     //         const id = req.params.id
 
-    //         // 筛选在Stock模型中符合req.params.id的ItemId的Stock.id
+    //         // 篩選在Stock模型中符合req.params.id的ItemId的Stock.id
     //         const stockIds = await Color.findAll({
     //         where: { ItemId: id },
     //         attributes: ['id'],
     //         }).map(stock => stock.id)
 
-
-    //         // 删除Item模型中的所有记录
     //         await Item.destroy({
     //         where: { id: id },
     //         })
 
-    //         // 删除Cart模型中与筛选出的StockId相匹配的记录
+    //         // 刪除Cart模型中與篩選出的StockId相匹配的記錄
     //         if (stockIds){
     //             await Cart.destroy({
     //             where: { ColorId: stockIds },
     //             })
     //         }
             
-    //         //删除Color模型中与筛选出的StockId相匹配的记录
+    //         //刪除Color模型中與篩選出的StockId相匹配的記錄
     //         await Color.destroy({
     //         where: { ItemId: id },
     //         })
@@ -417,13 +415,13 @@ const adminServices = {
         }
 
         if (stockExists) {
-            throw new Error('庫存已存在!')
-        }
+            const errorMessage = '庫存已存在!';
+            };
 
         let productNumberCounter = 1
         let productNumber = `ST${productNumberCounter.toString().padStart(6, '0')}`
         
-        // 循环检查是否已经存在相同的productNumber
+        // 循環檢查是否已經存在相同的productNumber
         while (true) {
             const existingColor = await Color.findOne({ where: { productNumber } })
             
@@ -448,7 +446,7 @@ const adminServices = {
                     status: '已新增類別！'
                 })
             } catch (err) {
-                cb(err)
+                cb(errorMessage)
             }
     },
 
