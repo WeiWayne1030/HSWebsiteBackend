@@ -415,8 +415,8 @@ const adminServices = {
         }
 
         if (stockExists) {
-            const errorMessage = '庫存已存在!';
-            };
+            throw new Error('庫存已存在!')
+        }
 
         let productNumberCounter = 1
         let productNumber = `ST${productNumberCounter.toString().padStart(6, '0')}`
@@ -446,7 +446,7 @@ const adminServices = {
                     status: '已新增類別！'
                 })
             } catch (err) {
-                cb(errorMessage)
+                cb(err)
             }
     },
 
