@@ -320,7 +320,7 @@ const adminServices = {
         const productNumberParam = req.query.productNumber || ""
 
         try {
-            const [colors, items, categories, sizes] = await Promise.all([
+            const [stocks, items, categories, sizes, colors] = await Promise.all([
                 Color.findAll({
                     where: productNumberParam !== "" ? { productNumber: productNumberParam } : {},
                     include: [
@@ -345,14 +345,19 @@ const adminServices = {
                     model: Category
                 }),
                 Category.findAll({ raw: true }),
-                Size.findAll({raw: true})
+                Size.findAll({raw: true}),
+                Color.findAll({
+                attributes: ['name'],
+                group: ['name'], // 使用GROUP BY確保獲取不同顏色
+                raw: true 
+            })
             ])
             
 
-            stocksInfo = await colors.map(color => {
-                return {...color,
-                    createdAt: switchTime(color.createdAt),
-                    updatedAt: switchTime(color.updatedAt)
+            stocksInfo = await stocks.map(stock => {
+                return {...stock,
+                    createdAt: switchTime(stock.createdAt),
+                    updatedAt: switchTime(stock.updatedAt)
                 }
             })
 
@@ -361,6 +366,7 @@ const adminServices = {
                 items,
                 sizes,
                 categories,
+                colors,
                 categoryId,
                 stateParam,
                 productNumberParam
