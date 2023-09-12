@@ -320,7 +320,7 @@ const adminServices = {
         const productNumberParam = req.query.productNumber || ""
 
         try {
-            const [colors, items, categories] = await Promise.all([
+            const [colors, items, categories, sizes] = await Promise.all([
                 Color.findAll({
                     where: productNumberParam !== "" ? { productNumber: productNumberParam } : {},
                     include: [
@@ -345,6 +345,7 @@ const adminServices = {
                     model: Category
                 }),
                 Category.findAll({ raw: true }),
+                Size.findAll({raw: true})
             ])
             
 
@@ -358,6 +359,7 @@ const adminServices = {
             cb(null, {
                 stocksInfo,
                 items,
+                sizes,
                 categories,
                 categoryId,
                 stateParam,
