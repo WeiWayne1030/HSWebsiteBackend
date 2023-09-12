@@ -129,8 +129,8 @@ const adminServices = {
     },
     postItem: async (req, cb) => {
         try {
-            const { name, price, description, CategoryId, Color, SizeId, itemStock } = req.body
-            if (!name || !price || !description || !CategoryId || !Color || !SizeId || !itemStock ) {
+            const { name, price, description, CategoryId } = req.body
+            if (!name || !price || !description || !CategoryId ) {
                 throw new Error('所有欄位不得為空!')
             }
             const item = await Item.findOne({
