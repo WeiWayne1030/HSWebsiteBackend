@@ -136,6 +136,7 @@ const adminServices = {
             const item = await Item.findOne({
             where: { name }
             })
+            
             if (item) {
                 throw new Error('此商品已存在！')
             }
