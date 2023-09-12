@@ -112,11 +112,27 @@ const userServices = {
     if (introduction.length >= 160) throw new Error('自我介紹不可超過160字！')
 
     try {
-        const user = await User.findOne({
-            where: { id: helpers.getUser(req).id }
-        })
+        const user = await Promise.all([
+            User.findAll({
+                raw: true,
+                where: { id: { [Op.ne]: id } } // 找出除了使用者本人以外的所有使用者
+            }),
+            User.findByPk(id),
+            imgurFileHandler(file)
+        ])
+
+        if (allUsers.length > 0) {
+                    const existingAccount = allUsers.find(user => user.account === account)
+                    const existingEmail = allUsers.find(user => user.email === email)
+                    if (existingAccount) {
+                        throw new Error('帳號已存在！')
+                    } else if (existingEmail) {
+                        throw new Error('信箱已存在！')
+                    }
+                }
 
         if (!user) throw new Error("使用者不存在！")
+        if (user.id !== Number(id)) throw new Error('只能編輯自己的使用者資料！')
 
         let hashedPassword = user.password 
 
@@ -134,9 +150,8 @@ const userServices = {
                 sex,
                 telNumber,
                 introduction,
-                avatar: file ? await localFileHandler(file) : user.avatar
+                avatar: filePath || user.avatar
             }),
-            localFileHandler(file)
         ])
 
         const userData = updatedUser.toJSON()
