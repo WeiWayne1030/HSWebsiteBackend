@@ -8,7 +8,7 @@ const imgurFileHandler = file => {
   return new Promise((resolve, reject) => {
     if (!file) return resolve(null)
 
-    return imgur.uploadFile(file.path)
+    return imgur.uploadFile(file)
       .then(img => {
         resolve(img?.link || null)
       })
