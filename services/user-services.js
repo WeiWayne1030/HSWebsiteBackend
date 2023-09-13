@@ -103,87 +103,102 @@ const userServices = {
         }
     },
     putUser: async (req, cb) => {
-    const { name, account, email, password, sex, telNumber, introduction, checkPassword } = req.body
-    const { file } = req
+        const { name, account, email, password, sex, telNumber, introduction, checkPassword } = req.body
+        const { file } = req
 
-    if (!name) throw new Error('請填入名稱！')
-    if (password && password !== checkPassword) throw new Error('密碼與確認密碼不一致！')
-    if (name.length >= 20) throw new Error('名稱不可超過20字！')
-    if (introduction.length >= 160) throw new Error('自我介紹不可超過160字！')
+        try {
+            if (!name) {
+                throw new Error('請填入名稱！')
+            }
 
-    try {
-        const user = await User.findOne({
-            where: { id: helpers.getUser(req).id }
-        })
-        const allUsers = Promise.all([
-            User.findAll({
-                raw: true,
-                where: { id: { [Op.ne]: helpers.getUser(req).id } } // 找出除了使用者本人以外的所有使用者
-            }),
-            User.findByPk(helpers.getUser(req).id),
-            imgurFileHandler(file)
-        ])
+            if (password && password !== checkPassword) {
+                throw new Error('密碼與確認密碼不一致！')
+            }
 
-        if (allUsers.length > 0) {
-                const existingAccount = allUsers.find(user => user.account === account)
-                const existingEmail = allUsers.find(user => user.email === email)
+            if (name.length >= 20) {
+                throw new Error('名稱不可超過20字！')
+            }
+
+            if (introduction.length >= 160) {
+                throw new Error('自我介紹不可超過160字！')
+            }
+
+            const user = await User.findOne({
+                where: { id: helpers.getUser(req).id }
+            })
+
+            if (!user) {
+                throw new Error("使用者不存在！")
+            }
+
+            const allUsers = await Promise.all([
+                User.findAll({
+                    raw: true,
+                    where: { id: { [Op.ne]: helpers.getUser(req).id } }
+                }),
+                User.findByPk(helpers.getUser(req).id),
+                imgurFileHandler(file)
+            ])
+
+            if (allUsers.length > 0) {
+                const existingAccount = allUsers[0].find(u => u.account === account)
+                const existingEmail = allUsers[0].find(u => u.email === email)
+
                 if (existingAccount) {
                     throw new Error('帳號已存在！')
                 } else if (existingEmail) {
                     throw new Error('信箱已存在！')
                 }
             }
-        
-        if (!user) throw new Error("使用者不存在！")
 
-        let hashedPassword = user.password 
+            let hashedPassword = user.password
 
-        if (password) {
-            const salt = bcrypt.genSaltSync(10)
-            hashedPassword = bcrypt.hashSync(password, salt)
+            if (password) {
+                const salt = bcrypt.genSaltSync(10)
+                hashedPassword = bcrypt.hashSync(password, salt)
+            }
+
+            const [updatedUser, filePath] = await Promise.all([
+                user.update({
+                    name,
+                    account,
+                    email,
+                    password: hashedPassword,
+                    sex,
+                    telNumber,
+                    introduction,
+                    avatar: filePath ? await imgurFileHandler(file) : user.avatar
+                })
+            ])
+
+            const userData = updatedUser.toJSON()
+            delete userData.password
+
+            cb(null, userData)
+        } catch (err) {
+            cb(err)
         }
-
-        const [updatedUser, filePath] = await Promise.all([
-            user.update({
-                name,
-                account,
-                email,
-                password: hashedPassword,
-                sex,
-                telNumber,
-                introduction,
-                avatar: filePath ? await imgurFileHandler(file) : user.avatar
-            })
-        ])
-
-        const userData = updatedUser.toJSON()
-        delete userData.password
-
-        cb(null, userData)
-    } catch (err) {
-        throw err
-    }
-},
+    },
     // orderInfo: async (req, cb) => {
     //     try {
-    //         const { id } = req.params;
-    //         const userId = helpers.getUser(req).id;
-    //         const { shipName, address, shipTel, MethodId } = req.body;
+    //         const { id } = req.params
+    //         const userId = helpers.getUser(req).id
+    //         const { shipName, address, shipTel, MethodId } = req.body
 
 
     //         const order = await Order.findOne({
     //             where: { OrderInfoId: id },
-    //         });
+    //         })
 
-    //         const method = await Method.findByPk(MethodId);
+    //         const method = await Method.findByPk(MethodId)
     //         if (!method) {
-    //             throw new Error('運送方式不存在');
+    //             throw new Error('運送方式不存在')
     //         }
     //         if (!order) {
-    //             throw new Error('訂單不存在');
+    //             throw new Error('訂單不存在')
     //         }
     //         if (order.UserId !== userId) {
-    //             throw new Error('只能編輯自己的訂單');
+    //             throw new Error('只能編輯自己的訂單')
     //         }
     //         const orderInfo = await OrderInfo.create({
     //             orderNumber: order.orderNumber,
@@ -193,10 +208,10 @@ const userServices = {
     //             shipTel,
     //             MethodId,
     //             total: order.total,
-    //         });
-    //         cb(null, orderInfo);
+    //         })
+    //         cb(null, orderInfo)
     //     } catch (err) {
-    //         cb(err);
+    //         cb(err)
     //     }
     // },
     buildOrder: async (req, cb) => {
@@ -362,8 +377,8 @@ const userServices = {
 
 //     getOrder: async (req, cb) => {
 //     try {
-//         const { orderId } = req.params;
-//         const userId = helpers.getUser(req).id;
+//         const { orderId } = req.params
+//         const userId = helpers.getUser(req).id
         
 //         const order = await Order.findOne({
 //             where: { id: orderId, UserId: userId },
@@ -385,23 +400,23 @@ const userServices = {
 //                     ]
 //                 }
 //             ],
-//         });
+//         })
 
 //         if (!order) {
-//             throw new Error('無法取得訂單資訊');
+//             throw new Error('無法取得訂單資訊')
 //         }
 
 //         if (order.Carts.length === 0) {
-//             throw new Error('無訂單資訊');
+//             throw new Error('無訂單資訊')
 //         }
 
 //         if (order.UserId !== userId) {
-//             throw new Error('只能編輯自己的訂單');
+//             throw new Error('只能編輯自己的訂單')
 //         }
 
-//         cb(null, order, order.Carts);
+//         cb(null, order, order.Carts)
 //     } catch (err) {
-//         cb(err);
+//         cb(err)
 //     }
 // }
 }
