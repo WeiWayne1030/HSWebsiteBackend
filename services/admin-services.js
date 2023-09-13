@@ -136,14 +136,14 @@ const adminServices = {
             const item = await Item.findOne({
             where: { name }
             })
-            
+
             if (item) {
                 throw new Error('此商品已存在！')
             }
             const { file } = req
             
             const filePath = await imgurFileHandler(file)
-            await Item.create({
+            newItem = await Item.create({
                 name,
                 state: 1,
                 price,
@@ -152,7 +152,7 @@ const adminServices = {
                 CategoryId
             })
 
-            cb(null, {
+            cb(null, { newItem,
                 status: '新增成功！'
             })
         } catch (err) {
