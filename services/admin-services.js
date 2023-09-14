@@ -153,9 +153,7 @@ const adminServices = {
                 CategoryId
             })
 
-            cb(null, { newItem,
-                status: '新增成功！'
-            })
+            cb(null, {status: '新增成功'})
         } catch (err) {
             cb(err)
         }
