@@ -1,4 +1,4 @@
-const { imgurFileHandler } = require('../helpers/imgurFileHandler')
+const { localFileHandler } = require('../helpers/imgurFileHandler')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt-nodejs')
 const { switchTime } = require('../helpers/dayjs-helpers')
@@ -133,16 +133,17 @@ const adminServices = {
             if (!name || !price || !description || !CategoryId ) {
                 throw new Error('所有欄位不得為空!')
             }
-            // const item = await Item.findOne({
-            // where: { name }
-            // })
+            const item = await Item.findOne({
+            where: { name }
+            })
 
-            // if (item) {
-            //     throw new Error('此商品已存在！')
-            // }
+            if (item) {
+                throw new Error('此商品已存在！')
+            }
             const { file } = req
             
-            const filePath = await imgurFileHandler(file)
+            const filePath = await localFileHandler(file)
+            console.log(filePath)
             newItem = await Item.create({
                 name,
                 state: 1,
