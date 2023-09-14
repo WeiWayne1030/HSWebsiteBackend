@@ -1,4 +1,4 @@
-const { localFileHandler } = require('../helpers/imgurFileHandler')
+const { imgurFileHandler } = require('../helpers/imgurFileHandler')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt-nodejs')
 const { switchTime } = require('../helpers/dayjs-helpers')
@@ -140,9 +140,9 @@ const adminServices = {
             if (item) {
                 throw new Error('此商品已存在！')
             }
-            const { file } = req
+            const { file } = req.body
             
-            const filePath = await localFileHandler(file)
+            const filePath = await imgurFileHandler(file)
             console.log(filePath)
             newItem = await Item.create({
                 name,
