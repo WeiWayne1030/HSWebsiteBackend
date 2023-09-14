@@ -144,7 +144,7 @@ const adminServices = {
             
             const filePath = await localFileHandler(file)
             console.log(filePath)
-            newItem = await Item.create({
+            const newItem =await Item.create({
                 name,
                 state: 1,
                 price,
@@ -153,7 +153,7 @@ const adminServices = {
                 CategoryId
             })
 
-            cb(null, {status: '新增成功'})
+            cb(null, {newItem,status: '新增成功'})
         } catch (err) {
             cb(err)
         }
