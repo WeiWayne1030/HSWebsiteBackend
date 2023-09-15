@@ -140,7 +140,7 @@ const adminServices = {
             if (item) {
                 throw new Error('此商品已存在！')
             }
-            const { file } = req.body
+            const { file } = req
             
             const filePath = await imgurFileHandler(file)
             console.log(filePath)
