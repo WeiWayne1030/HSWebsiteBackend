@@ -167,7 +167,9 @@ const userServices = {
                     sex,
                     telNumber,
                     introduction,
-                    avatar: filePath ? await imgurFileHandler(file) : user.avatar
+                    avatar: filePath ? await imgurFileHandler(file) : user.avatar,
+                    createdAt,
+                    updatedAt
                 })
             ])
 

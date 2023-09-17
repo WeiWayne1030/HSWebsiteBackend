@@ -150,8 +150,10 @@ const adminServices = {
                 state: 1,
                 price,
                 description,
+                CategoryId,
                 image: filePath || null,
-                CategoryId
+                createdAt,
+                updatedAt
             })
 
             cb(null, { newItem,
