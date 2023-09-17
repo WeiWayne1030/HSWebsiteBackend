@@ -24,7 +24,7 @@ router.post('/api/users', userController.signUp)
 //個人資料
 router.get('/api/user/profile', authenticated, authenticatedUser, userController.getUser)
 //修改個人資料
-router.put('/api/user/profile',upload.single('avatar'), authenticated, authenticatedUser, userController.putUser)
+router.put('/api/user/profile',upload.single('image'), authenticated, authenticatedUser, userController.putUser)
 
 
 
@@ -48,7 +48,7 @@ router.post('/api/admin/items/:id/remove', authenticated, authenticatedAdmin, ad
 ////重新上架商品
 router.post('/api/admin/items/:id/relist', authenticated, authenticatedAdmin, adminController.relistItem);
 ////新增商品
-router.post('/api/admin/items',upload.fields([{ name: 'image', maxCount: 1 }]), authenticated, authenticatedAdmin, adminController.postItem)
+router.post('/api/admin/items',upload.single('image'), authenticated, authenticatedAdmin, adminController.postItem)
 ////檢視所有商品（上架下架）
 router.get('/api/admin/items', authenticated, authenticatedAdmin, adminController.getItems)
 

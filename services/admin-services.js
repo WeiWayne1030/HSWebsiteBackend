@@ -134,10 +134,11 @@ const adminServices = {
                 throw new Error('所有欄位不得為空!')
             }
             const item = await Item.findOne({
-            where: { name }
+            where: { name },
+            attributes:['name']
             })
 
-            if (item) {
+            if (item.dataValues.name === name) {
                 throw new Error('此商品已存在！')
             }
             const { file } = req
