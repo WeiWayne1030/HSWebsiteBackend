@@ -15,7 +15,7 @@ const localFileHandler = file => {
   })
 }
 
-const imgurFileHandler = file => {
+const imgurFileHandler = (file) => {
   return new Promise((resolve, reject) => {
     if (!file) return resolve(null)
 
