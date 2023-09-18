@@ -106,6 +106,8 @@ const userServices = {
         const { name, account, email, password, sex, telNumber, introduction, checkPassword } = req.body
         const { file } = req
 
+        console.log(req)
+
         try {
             if (!name) {
                 throw new Error('請填入名稱！')
