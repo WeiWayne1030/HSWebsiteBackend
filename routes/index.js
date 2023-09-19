@@ -48,7 +48,7 @@ router.post('/api/admin/items/:id/remove', authenticated, authenticatedAdmin, ad
 ////重新上架商品
 router.post('/api/admin/items/:id/relist', authenticated, authenticatedAdmin, adminController.relistItem);
 ////新增商品
-router.post('/api/admin/items', authenticated, authenticatedAdmin, upload.single('image'), adminController.postItem)
+router.post('/api/admin/items', authenticated, authenticatedAdmin, adminController.postItem)
 ////檢視所有商品（上架下架）
 router.get('/api/admin/items', authenticated, authenticatedAdmin, adminController.getItems)
 
