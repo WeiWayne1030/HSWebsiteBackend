@@ -24,7 +24,7 @@ router.post('/api/users', userController.signUp)
 //個人資料
 router.get('/api/user/profile', authenticated, authenticatedUser, userController.getUser)
 //修改個人資料
-router.put('/api/user/profile', authenticated, authenticatedUser,upload.single('image'), userController.putUser)
+router.put('/api/user/profile', authenticated, authenticatedUser,upload.single('avatar'), userController.putUser)
 
 
 

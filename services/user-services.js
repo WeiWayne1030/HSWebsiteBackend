@@ -105,9 +105,6 @@ const userServices = {
     putUser: async (req, cb) => {
         const { name, account, email, password, sex, telNumber, introduction, checkPassword } = req.body
         const { file } = req
-
-        console.log(req)
-
         try {
             if (!name) {
                 throw new Error('請填入名稱！')
@@ -160,7 +157,13 @@ const userServices = {
                 hashedPassword = bcrypt.hashSync(password, salt)
             }
 
-            const [updatedUser, filePath] = await Promise.all([
+            let filePath = user.avatar; // Initialize filePath with user.avatar
+
+            if (file) {
+                filePath = await imgurFileHandler(file);
+            }
+
+            const [updatedUser] = await Promise.all([
                 user.update({
                     name,
                     account,
@@ -169,7 +172,7 @@ const userServices = {
                     sex,
                     telNumber,
                     introduction,
-                    avatar: filePath ? await imgurFileHandler(file) : user.avatar
+                    avatar: filePath
                 })
             ])
 
