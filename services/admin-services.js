@@ -133,27 +133,26 @@ const adminServices = {
             if (!name || !price || !description || !CategoryId ) {
                 throw new Error('所有欄位不得為空!')
             }
-            const item = await Item.findOne({
-            where: { name },
-            attributes:['name']
-            })
+           // 使用findOne查找具有相同名稱的選項
+            const existingItem = await Item.findOne({
+                where: {
+                    name: name
+                }
+            });
 
-            if (item.dataValues.name === name) {
-                throw new Error('此商品已存在！')
+            if (existingItem) {
+                throw new Error('此商品已存在！');
             }
             const { file } = req
             
             const filePath = await imgurFileHandler(file)
-            console.log(filePath)
             newItem = await Item.create({
                 name,
                 state: 1,
                 price,
                 description,
                 CategoryId,
-                image: filePath || null,
-                createdAt,
-                updatedAt
+                image: filePath || null
             })
 
             cb(null, { newItem,
