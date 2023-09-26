@@ -6,41 +6,74 @@ const { Op } = require('sequelize')
 const { User, Order, Method, Cart } = require('../models')
 const { imgurFileHandler } = require('../helpers/imgurFileHandler')
 const { switchTime } = require('../helpers/dayjs-helpers')
+const redis = require('ioredis')
+const client = redis.createClient();
+
+// Handle Redis client errors
+client.on('error', (err) => {
+  console.error('Redis error:', err);
+});
 
 const userServices = {
-    signIn: async(req, cb) => {
-        try {
-            const {
-                account, password
-            } = req.body
-            if (!account || !password) throw new Error('請輸入帳號和密碼！')
+  signIn: async (req, cb) => {
+    try {
+      const { account, password } = req.body;
+      if (!account || !password) throw new Error('請輸入帳號和密碼！');
 
-            const user = await User.findOne({
-                where: {
-                    account
-                }
-            })
-            if (!user) throw new Error('帳號不存在！')
-            if (user.role === 'seller') throw new Error('帳號不存在！')
-            if (!bcrypt.compareSync(password, user.password)) throw new Error('帳密錯誤！')
-            const payload = {
-                id: user.id
-            }
-            const token = jwt.sign(payload, process.env.JWT_SECRET, {
-                expiresIn: '30d'
-            })
-            const userData = user.toJSON()
-            delete userData.password
-            return cb(null, {
-                status: 'success',
-                message: '登入成功！',
-                token,
-                user: userData
-            })
-        } catch (err) {
-            cb(err)
+      // 尝试从Redis缓存中获取用户数据
+    client.get(`user:${account}`, async (err, cachedUserData) => {
+      if (err) throw err;
+
+      if (cachedUserData) {
+        // 如果有缓存数据，直接返回缓存的用户数据
+        const userData = JSON.parse(cachedUserData);
+        return cb(null,{
+          status: 'success',
+          message: '登入成功！',
+          token: userData.token,
+          user: userData.user,
+        });
+      } else {
+        // 如果没有缓存数据，从数据库中获取用户数据
+        const user = await User.findOne({
+          where: { account },
+        });
+
+          if (!user) throw new Error('帳號不存在！');
+          if (user.role === 'seller') throw new Error('帳號不存在！');
+          if (!bcrypt.compareSync(password, user.password))
+            throw new Error('帳密錯誤！');
+
+          // 创建token
+          const payload = {
+            id: user.id,
+          };
+          const token = jwt.sign(payload, process.env.JWT_SECRET, {
+            expiresIn: '30d',
+          });
+
+          // 构建要缓存的用户数据
+          const userDataToCache = {
+            token,
+            user: user.toJSON(),
+          };
+
+          // 存储用户数据到Redis，并设置过期时间
+        client.setex(`user:${account}`, 3600, JSON.stringify(userDataToCache));
+
+          // 返回用户数据
+          return cb(null, {
+            status: 'success',
+            message: '登入成功！',
+            token,
+            user: user.toJSON(),
+          });
         }
-    },
+      });
+    } catch (err) {
+      cb(err);
+    }
+  },
     signUp: async(req, cb) => {
         try {
             const {

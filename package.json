@@ -16,6 +16,7 @@
     "bcrypt-nodejs": "^0.0.3",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
+    "connect-redis": "^7.1.0",
     "cors": "^2.8.5",
     "dayjs": "^1.11.9",
     "dotenv": "^10.0.0",
@@ -25,6 +26,7 @@
     "faker": "^5.5.3",
     "flash": "^1.1.0",
     "imgur": "^1.0.2",
+    "ioredis": "^5.3.2",
     "jsonwebtoken": "^8.5.1",
     "method-override": "^3.0.0",
     "moment-timezone": "^0.5.43",
@@ -33,7 +35,9 @@
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
-    "sequelize": "^5.22.5",
-    "sequelize-cli": "^5.5.1"
+    "redis": "^4.6.10",
+    "redis-commander": "^0.8.0",
+    "sequelize": "^6.33.0",
+    "sequelize-cli": "^6.6.1"
   }
 }
