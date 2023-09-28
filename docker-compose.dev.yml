@@ -1,0 +1,15 @@
+version: "3.7"
+services:
+  node-app:
+    build: 
+      context: .
+      args:
+        NODE_ENV: development
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    environment:
+      NODE_ENV: development
+      GITHUB_PAGE: http://localhost:5173
+    command: >
+      sh -c "./wait-for-it.sh mydb:3306 -t 60 -- npx sequelize db:migrate && npx sequelize db:seed:all && npm run dev"

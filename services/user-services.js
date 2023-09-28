@@ -6,13 +6,13 @@ const { Op } = require('sequelize')
 const { User, Order, Method, Cart } = require('../models')
 const { imgurFileHandler } = require('../helpers/imgurFileHandler')
 const { switchTime } = require('../helpers/dayjs-helpers')
-const redis = require('ioredis')
-const client = redis.createClient();
+// const redis = require('ioredis')
+// const client = redis.createClient();
 
-// Handle Redis client errors
-client.on('error', (err) => {
-  console.error('Redis error:', err);
-});
+// // Handle Redis client errors
+// client.on('error', (err) => {
+//   console.error('Redis error:', err);
+// });
 
 const userServices = {
   signIn: async(req, cb) => {
