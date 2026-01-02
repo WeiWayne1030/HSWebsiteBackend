@@ -3,137 +3,84 @@ const helpers = require('../_helpers')
 const { getOffset, getPagination } = require('../helpers/pagination-helper')
 
 const cartServices = {
-  getCarts: async(req, cb) => {
+  getCarts: async (req, cb) => {
     try {
-      const DEFAULT_LIMIT = 9
-      const page = Number(req.query.page) || 1
-      const limit = Number(req.query.limit) || DEFAULT_LIMIT
-      const offset = getOffset(limit, page)
+      const redis = req.redisClient
       const userId = helpers.getUser(req).id
-      const carts = await Cart.findAndCountAll({
-        where: [
-          { UserId: userId },
-          {state: '未生成訂單'}
-        ],
-        include: [
-          {
-            model: Color,
-            include: [
-              {
-                model: Item,
-                include: [
-                  {
-                    model: Category
-                  }
-                ]
-              },
-              {
-                model: Size
-              },
-            ],
-          },
-        ],
-        order: [['createdAt', 'DESC']],
-        limit,
-        offset,
-      })
-      if (!carts === 0) {
+
+      const cartKey = `cart:${userId}`
+      const cart = await redis.hGetAll(cartKey)
+
+      if (!cart || Object.keys(cart).length === 0) {
         throw new Error('目前沒有任何物品在購物車裡！')
       }
-      const pagination = getPagination(limit, page, carts.count)
-      cb(null, carts, pagination)
+
+      // cart = { colorId: quantity }
+      cb(null, cart)
     } catch (err) {
       cb(err)
     }
   },
   addToCart: async (req, cb) => {
+    const redis = req.redisClient
+    const userId = helpers.getUser(req).id
+    const colorId = Number(req.body.ColorId)
+    const quantity = Number(req.body.itemQuantity)
+
+    const cartKey = `cart:${userId}`
+    const stockKey = `stock:${colorId}`
+    const lockKey = `cart:lock:${userId}`
+
     try {
-      const id = Number(req.body.ColorId)
-      
-      const itemQuantity = Number(req.body.itemQuantity)
-      
-      const existingCartItem = await Cart.findOne({
-        where: {
-          UserId: helpers.getUser(req).id,
-          ColorId: id,
-          state: "未生成訂單"
-        }
-      })
+      // 1️⃣ 防重複請求（Lock）
+      const locked = await redis.set(lockKey, '1', { NX: true, EX: 5 })
+      if (!locked) throw new Error('請勿重複操作')
 
-      if (existingCartItem) {
-        throw new Error('你已經加入購物車')
-      }
-      
-      const stock = await Color.findOne({
-        where: {id: id},
-        include: [{
-          model: Item,
-          attributes: ['price']
-        }
-      ]
-      })
+      // 2️⃣ 檢查是否已在購物車
+      const exists = await redis.hExists(cartKey, colorId)
+      if (exists) throw new Error('你已經加入購物車')
 
-      if (stock.itemStock === 0) {
-        throw new Error("此商品已沒庫存")
+      // 3️⃣ 扣 Redis 庫存（原子）
+      const remain = await redis.decrBy(stockKey, quantity)
+      if (remain < 0) {
+        await redis.incrBy(stockKey, quantity)
+        throw new Error('庫存不足')
       }
 
-      if (stock.itemStock < itemQuantity) {
-        throw new Error("無效數量")
-      }
-      
-      const price = stock.Item.price
-      const amount = price * itemQuantity
+      // 4️⃣ 加入購物車
+      await redis.hSet(cartKey, colorId, quantity)
+      await redis.expire(cartKey, 3600)
 
-      stock.itemStock -= itemQuantity
-      await stock.save()
-
-      await Cart.create({
-        itemQuantity,
-        state:'未生成訂單',
-        UserId: helpers.getUser(req).id,
-        ColorId: id,
-        amount
-      })
-
-      cb(null, {
-        status: '已添加購物車！'
-      })
+      cb(null, { status: '已加入購物車！' })
     } catch (err) {
       cb(err)
+    } finally {
+      await redis.del(lockKey)
     }
   },
   delCart: async (req, cb) => {
     try {
-      const id = req.params.id
-      const cart = await Cart.findByPk(id)
-      if (!cart) throw new Error('購物車裡沒有該品項!')
+      const redis = req.redisClient
+      const userId = helpers.getUser(req).id
+      const colorId = req.params.id
 
-      const colorId = cart.ColorId
-      
+      const cartKey = `cart:${userId}`
+      const stockKey = `stock:${colorId}`
 
-      const stock = await Color.findOne({
-        where: {id: colorId},
-      })
+      const quantity = await redis.hGet(cartKey, colorId)
+      if (!quantity) throw new Error('購物車裡沒有該品項')
 
-      const newStock = stock.itemStock += cart.itemQuantity
-      await stock.update({
-      itemStock: newStock,
-     })
+      // 歸還庫存
+      await redis.incrBy(stockKey, Number(quantity))
 
-      await Cart.destroy({
-        where: {
-          id: id
-        }
-      })
+      // 刪購物車項目
+      await redis.hDel(cartKey, colorId)
 
-      cb(null, {
-        status: '已將該品項在購物車中移除！'
-      })
+      cb(null, { status: '已將該品項移除' })
     } catch (err) {
       cb(err)
     }
-  },
-
+  }
   
   // delCarts: async (req, cb) => {
   //     try {
